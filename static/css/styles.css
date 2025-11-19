@@ -193,6 +193,15 @@ input[type="file"]:focus {
     margin-top: 2rem;
 }
 
+.preview-instructions {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #eff6ff;
+    border-radius: 6px;
+    border-left: 4px solid var(--primary-color);
+}
+
 #previewContent {
     max-height: 500px;
     overflow-y: auto;
@@ -200,35 +209,82 @@ input[type="file"]:focus {
 }
 
 .test-step {
-    padding: 1rem;
+    padding: 1.25rem;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     margin-bottom: 1rem;
-    background-color: var(--background);
+    background-color: var(--card-background);
+    transition: all 0.2s;
+}
+
+.test-step:hover {
+    box-shadow: var(--shadow);
 }
 
 .test-step-header {
     display: flex;
     gap: 1rem;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .step-no {
     color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.1rem;
 }
 
 .req-id {
     color: var(--text-secondary);
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--background);
+    border-radius: 4px;
 }
 
-.test-step-desc {
+.editable-field {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    background-color: white;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.editable-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.field-label {
+    display: block;
+    font-weight: 600;
     margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-size: 0.875rem;
 }
 
-.test-step-expected {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
+.test-step-field {
+    margin-bottom: 1rem;
+}
+
+.test-step-field:last-child {
+    margin-bottom: 0;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
 }
 
 .alert {

@@ -125,45 +125,53 @@ Your Word template should contain a table with the following columns:
 
 1. **Open your browser** and navigate to `http://localhost:5000`
 
-2. **Upload URS Document**:
+2. **Upload Both Files**:
    - Click "Choose File" under "URS Document"
    - Select your URS file (PDF, DOCX, or TXT)
-
-3. **Upload Template** (optional for preview):
    - Click "Choose File" under "Test Script Template"
    - Select your Word template (.docx)
 
-4. **Preview (Optional)**:
-   - Click "Preview Test Steps" to see the generated test steps without creating a document
-   - Review the extracted requirements and expected results
-
-5. **Generate Test Script**:
-   - Click "Generate Test Script"
+3. **Generate Preview**:
+   - Click "Generate Test Script Preview"
    - Wait for processing (typically 30-60 seconds)
-   - The generated Word document will automatically download
+   - The AI will extract all requirements from your URS
 
-6. **Review and Validate**:
+4. **Review and Edit**:
+   - Review all generated test steps in the editable preview
+   - Click on any field to edit the text:
+     - Requirement ID
+     - Description
+     - Expected Result
+   - Make any necessary adjustments to ensure accuracy
+
+5. **Download Final Document**:
+   - Once satisfied with the test steps, click "Accept and Download"
+   - The Word document will be generated and automatically downloaded
+   - The document will be populated with your edited test steps
+
+6. **Complete Testing**:
    - Open the downloaded document
-   - Review all test steps for accuracy
-   - Make any necessary manual adjustments
-   - Complete Pass/Fail, Initial, and Date columns during testing
+   - Complete Pass/Fail, Initial, and Date columns during actual testing
+   - Follow your organization's validation procedures
 
 ## API Endpoints
 
-### POST `/api/preview`
+### POST `/api/generate-preview`
 
-Preview test steps without generating a Word document.
+Generate test steps from URS for preview and editing.
 
 **Request:**
 ```
 Content-Type: multipart/form-data
 
 urs_file: <file>
+template_file: <file>
 ```
 
 **Response:**
 ```json
 {
+  "session_id": "uuid",
   "test_steps": [
     {
       "step_no": 1,
@@ -175,21 +183,41 @@ urs_file: <file>
 }
 ```
 
-### POST `/api/generate`
+### POST `/api/generate-final`
 
-Generate a complete test script Word document.
+Generate final Word document from edited test steps.
+
+**Request:**
+```
+Content-Type: application/json
+
+{
+  "session_id": "uuid",
+  "test_steps": [...]
+}
+```
+
+**Response:**
+- Success: Binary Word document (.docx)
+- Error: JSON with error message
+
+### POST `/api/preview`
+
+*(Legacy endpoint)* Preview test steps without template file.
 
 **Request:**
 ```
 Content-Type: multipart/form-data
 
 urs_file: <file>
-template_file: <file>
 ```
 
 **Response:**
-- Success: Binary Word document (.docx)
-- Error: JSON with error message
+```json
+{
+  "test_steps": [...]
+}
+```
 
 ## Project Structure
 
