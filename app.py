@@ -7,9 +7,18 @@ from dotenv import load_dotenv
 import anthropic
 from docx import Document
 import PyPDF2
-import pdfplumber
 from io import BytesIO
 import traceback
+
+# Try to import pdfplumber (optional, may fail on some systems)
+try:
+    import pdfplumber
+    PDFPLUMBER_AVAILABLE = True
+    print("✓ pdfplumber is available for enhanced PDF extraction")
+except ImportError as e:
+    PDFPLUMBER_AVAILABLE = False
+    print(f"⚠ pdfplumber not available (will use PyPDF2 only): {e}")
+    print("  This is normal on some Windows systems. PDF extraction will still work.")
 
 # Load environment variables
 load_dotenv()
@@ -37,31 +46,40 @@ def allowed_file(filename, allowed_extensions):
 
 
 def extract_text_from_pdf(file_path):
-    """Extract text from PDF file using pdfplumber for better accuracy"""
+    """Extract text from PDF file using PyPDF2 (with optional pdfplumber enhancement)"""
     text = ""
+
+    # Try pdfplumber first if available (better for complex PDFs)
+    if PDFPLUMBER_AVAILABLE:
+        try:
+            with pdfplumber.open(file_path) as pdf:
+                print(f"Using pdfplumber: PDF has {len(pdf.pages)} pages")
+                for i, page in enumerate(pdf.pages):
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text + "\n"
+                        print(f"Page {i+1}: extracted {len(page_text)} characters")
+
+                if text.strip():
+                    return text
+                else:
+                    print("pdfplumber returned no text, falling back to PyPDF2")
+        except Exception as e:
+            print(f"pdfplumber failed: {e}, falling back to PyPDF2")
+
+    # Use PyPDF2 (works on all systems)
     try:
-        with pdfplumber.open(file_path) as pdf:
-            print(f"PDF has {len(pdf.pages)} pages")
-            for i, page in enumerate(pdf.pages):
+        with open(file_path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            print(f"Using PyPDF2: PDF has {len(pdf_reader.pages)} pages")
+            for i, page in enumerate(pdf_reader.pages):
                 page_text = page.extract_text()
                 if page_text:
                     text += page_text + "\n"
                     print(f"Page {i+1}: extracted {len(page_text)} characters")
     except Exception as e:
-        # Fallback to PyPDF2
-        print(f"pdfplumber failed, trying PyPDF2: {e}")
-        try:
-            with open(file_path, 'rb') as file:
-                pdf_reader = PyPDF2.PdfReader(file)
-                print(f"PDF has {len(pdf_reader.pages)} pages")
-                for i, page in enumerate(pdf_reader.pages):
-                    page_text = page.extract_text()
-                    if page_text:
-                        text += page_text + "\n"
-                        print(f"Page {i+1}: extracted {len(page_text)} characters")
-        except Exception as e2:
-            print(f"PyPDF2 also failed: {e2}")
-            raise ValueError(f"Unable to extract text from PDF. The file may be password-protected, corrupted, or contains only images. Error: {str(e2)}")
+        print(f"PyPDF2 failed: {e}")
+        raise ValueError(f"Unable to extract text from PDF. The file may be password-protected, corrupted, or contains only images. Error: {str(e)}")
 
     if not text.strip():
         raise ValueError("PDF file appears to be empty or contains only images. Please ensure the PDF has extractable text.")
