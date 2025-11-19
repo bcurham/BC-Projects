@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Test Script Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Automated Test Script Generator</h1>
+            <p class="subtitle">Generate GxP-compliant test scripts from URS documents</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <div class="card">
+                    <h2>Upload Documents</h2>
+
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="ursFile">
+                                <span class="label-text">URS Document</span>
+                                <span class="label-hint">Upload your User Requirements Specification (PDF, DOCX, or TXT)</span>
+                            </label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="ursFile" name="urs_file" accept=".pdf,.docx,.txt" required>
+                                <span class="file-name" id="ursFileName">No file selected</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="templateFile">
+                                <span class="label-text">Test Script Template</span>
+                                <span class="label-hint">Upload your Word template with the test script table (DOCX)</span>
+                            </label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="templateFile" name="template_file" accept=".docx" required>
+                                <span class="file-name" id="templateFileName">No file selected</span>
+                            </div>
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" id="previewBtn" class="btn btn-secondary">
+                                Preview Test Steps
+                            </button>
+                            <button type="submit" id="generateBtn" class="btn btn-primary">
+                                Generate Test Script
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="loadingSection" class="loading-section hidden">
+                <div class="spinner"></div>
+                <p id="loadingText">Processing your documents...</p>
+            </div>
+
+            <div id="previewSection" class="preview-section hidden">
+                <div class="card">
+                    <h2>Preview Test Steps</h2>
+                    <div id="previewContent"></div>
+                    <button id="closePreview" class="btn btn-secondary">Close Preview</button>
+                </div>
+            </div>
+
+            <div id="errorSection" class="error-section hidden">
+                <div class="alert alert-error">
+                    <strong>Error:</strong>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+
+            <div id="successSection" class="success-section hidden">
+                <div class="alert alert-success">
+                    <strong>Success!</strong>
+                    <p>Your test script has been generated and downloaded.</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p class="info-text">
+                This tool uses AI to parse URS documents and generate test scripts compliant with
+                FDA 21 CFR Part 11 and GxP requirements. Always review generated content before use.
+            </p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
