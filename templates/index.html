@@ -42,9 +42,6 @@
                         </div>
 
                         <div class="button-group">
-                            <button type="button" id="previewBtn" class="btn btn-secondary">
-                                Preview Test Steps
-                            </button>
                             <button type="submit" id="generateBtn" class="btn btn-primary">
                                 Generate Test Script
                             </button>
@@ -60,9 +57,21 @@
 
             <div id="previewSection" class="preview-section hidden">
                 <div class="card">
-                    <h2>Preview Test Steps</h2>
-                    <div id="previewContent"></div>
-                    <button id="closePreview" class="btn btn-secondary">Close Preview</button>
+                    <div class="preview-header">
+                        <h2>Generated Test Script - Preview & Edit</h2>
+                        <p class="preview-subtitle">Review the populated test script table below. Click on any cell to edit before downloading.</p>
+                    </div>
+                    <div class="table-preview-container">
+                        <div id="previewContent"></div>
+                    </div>
+                    <div class="preview-actions">
+                        <button id="closePreview" class="btn btn-secondary">
+                            <span>← Start Over</span>
+                        </button>
+                        <button id="downloadBtn" class="btn btn-primary">
+                            <span>Download Word Document →</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
