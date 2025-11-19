@@ -277,6 +277,12 @@ input[type="file"]:focus {
     font-family: inherit;
     transition: all 0.2s;
     resize: none;
+    overflow: hidden;
+}
+
+.table-cell-textarea {
+    min-height: 60px;
+    overflow-y: auto;
 }
 
 .table-cell-input:focus,
