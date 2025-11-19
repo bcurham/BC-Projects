@@ -4,12 +4,15 @@ A web-based automation system that parses User Requirements Specification (URS) 
 
 ## Features
 
-- **Multi-format URS Support**: Upload URS documents in PDF, DOCX, or TXT format
-- **AI-Powered Parsing**: Uses Claude AI to intelligently extract requirements and generate test steps
-- **Template-Based Generation**: Populates your existing Word document templates
-- **Preview Mode**: Preview generated test steps before creating the final document
-- **GxP Compliance**: Generates test scripts suitable for FDA 21 CFR Part 11 and GxP validation
-- **User-Friendly Interface**: Clean, modern web interface with drag-and-drop file upload
+✨ **Simple 3-Step Workflow**: Upload → Generate → Download
+📄 **Multi-format URS Support**: Upload URS documents in PDF, DOCX, or TXT format
+🤖 **AI-Powered Extraction**: Claude AI intelligently extracts requirements and generates test steps
+📋 **Table Preview**: See exactly how your Word document will look before downloading
+✏️ **Inline Editing**: Click any cell to edit requirement IDs, descriptions, or expected results
+📊 **Template-Based**: Automatically populates your existing Word document templates
+✅ **GxP Compliance**: Generates test scripts suitable for FDA 21 CFR Part 11 and GxP validation
+🎨 **Clean Interface**: Modern, intuitive web interface with real-time feedback
+🔒 **Session Management**: Secure, isolated sessions for multiple users
 
 ## Architecture
 
@@ -121,38 +124,48 @@ Your Word template should contain a table with the following columns:
 - The Pass/Fail, Initial, and Date columns will remain empty for manual completion
 - Save the template as a `.docx` file
 
-### Generating Test Scripts
+### Generating Test Scripts - Simple 3-Step Process
 
+#### Step 1: Upload Files
 1. **Open your browser** and navigate to `http://localhost:5000`
+2. **Upload URS Document**: Click "Choose File" and select your URS (PDF, DOCX, or TXT)
+3. **Upload Test Script Template**: Click "Choose File" and select your Word template (.docx)
 
-2. **Upload Both Files**:
-   - Click "Choose File" under "URS Document"
-   - Select your URS file (PDF, DOCX, or TXT)
-   - Click "Choose File" under "Test Script Template"
-   - Select your Word template (.docx)
+#### Step 2: Generate & Review
+1. **Click "Generate Test Script"** button
+2. **Wait for AI processing** (typically 30-60 seconds)
+   - The AI extracts all requirements from your URS
+   - Test steps are automatically generated
+   - The populated table preview appears
 
-3. **Generate Preview**:
-   - Click "Generate Test Script Preview"
-   - Wait for processing (typically 30-60 seconds)
-   - The AI will extract all requirements from your URS
+3. **Review the Table Preview**:
+   - See exactly how your Word document will look
+   - All 7 columns are displayed:
+     - Step | Requirement # | Description | Expected Result | Pass/Fail | Initial | Date
+   - The last 3 columns (Pass/Fail, Initial, Date) remain empty for manual completion
 
-4. **Review and Edit**:
-   - Review all generated test steps in the editable preview
-   - Click on any field to edit the text:
-     - Requirement ID
-     - Description
-     - Expected Result
-   - Make any necessary adjustments to ensure accuracy
+4. **Edit Any Cell** (optional):
+   - Click on any Requirement ID, Description, or Expected Result
+   - The cell becomes editable
+   - Changes are saved automatically
+   - Hover effects show which cells are editable
 
-5. **Download Final Document**:
-   - Once satisfied with the test steps, click "Accept and Download"
-   - The Word document will be generated and automatically downloaded
-   - The document will be populated with your edited test steps
+#### Step 3: Download
+1. **Click "Download Word Document"** when satisfied with the preview
+2. **The populated Word document downloads immediately**
+3. **Open and use** the document for validation testing
 
-6. **Complete Testing**:
-   - Open the downloaded document
-   - Complete Pass/Fail, Initial, and Date columns during actual testing
-   - Follow your organization's validation procedures
+#### Alternative: Start Over
+- Click "← Start Over" at any time to upload different files
+
+### After Download
+
+1. Open the downloaded Word document
+2. During actual testing, complete:
+   - Pass/Fail column (mark as Pass or Fail for each test)
+   - Initial column (tester's initials)
+   - Date column (date of test execution)
+3. Follow your organization's validation and approval procedures
 
 ## API Endpoints
 

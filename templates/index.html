@@ -43,7 +43,7 @@
 
                         <div class="button-group">
                             <button type="submit" id="generateBtn" class="btn btn-primary">
-                                Generate Test Script Preview
+                                Generate Test Script
                             </button>
                         </div>
                     </form>
@@ -57,12 +57,20 @@
 
             <div id="previewSection" class="preview-section hidden">
                 <div class="card">
-                    <h2>Review and Edit Test Steps</h2>
-                    <p class="preview-instructions">Review the generated test steps below. You can edit any field by clicking on it. When satisfied, click "Accept and Download" to generate your Word document.</p>
-                    <div id="previewContent"></div>
+                    <div class="preview-header">
+                        <h2>Generated Test Script - Preview & Edit</h2>
+                        <p class="preview-subtitle">Review the populated test script table below. Click on any cell to edit before downloading.</p>
+                    </div>
+                    <div class="table-preview-container">
+                        <div id="previewContent"></div>
+                    </div>
                     <div class="preview-actions">
-                        <button id="closePreview" class="btn btn-secondary">Cancel</button>
-                        <button id="downloadBtn" class="btn btn-primary">Accept and Download</button>
+                        <button id="closePreview" class="btn btn-secondary">
+                            <span>← Start Over</span>
+                        </button>
+                        <button id="downloadBtn" class="btn btn-primary">
+                            <span>Download Word Document →</span>
+                        </button>
                     </div>
                 </div>
             </div>

@@ -74,7 +74,7 @@ function hideLoading() {
     generateBtn.disabled = false;
 }
 
-// Render editable preview of test steps
+// Render editable preview of test steps in table format
 function renderPreview(testSteps) {
     if (!testSteps || testSteps.length === 0) {
         previewContent.innerHTML = '<p>No test steps generated.</p>';
@@ -83,54 +83,88 @@ function renderPreview(testSteps) {
 
     currentTestSteps = testSteps;
 
-    let html = '<div class="test-steps-list">';
+    // Create table structure matching the Word template
+    let html = `
+        <table class="test-script-table">
+            <thead>
+                <tr>
+                    <th class="step-cell">Step</th>
+                    <th class="req-id-cell">Requirement #</th>
+                    <th class="description-cell">Description</th>
+                    <th class="expected-cell">Expected Result</th>
+                    <th class="status-cell">Pass/Fail</th>
+                    <th class="status-cell">Initial</th>
+                    <th class="status-cell">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
     testSteps.forEach((step, index) => {
-        html += `
-            <div class="test-step" data-index="${index}">
-                <div class="test-step-header">
-                    <span class="step-no">Step ${step.step_no}</span>
-                    <span class="req-id">${escapeHtml(step.requirement_id)}</span>
-                </div>
+        // Auto-resize textarea based on content
+        const descRows = Math.max(2, Math.ceil(step.description.length / 50));
+        const expRows = Math.max(2, Math.ceil(step.expected_result.length / 40));
 
-                <div class="test-step-field">
-                    <label class="field-label">Requirement ID</label>
+        html += `
+            <tr data-index="${index}">
+                <td class="step-cell">${step.step_no}</td>
+                <td class="req-id-cell">
                     <input type="text"
-                           class="editable-field req-id-input"
+                           class="table-cell-input"
                            data-field="requirement_id"
                            data-index="${index}"
-                           value="${escapeHtml(step.requirement_id)}">
-                </div>
-
-                <div class="test-step-field">
-                    <label class="field-label">Description</label>
-                    <textarea class="editable-field desc-input"
+                           value="${escapeHtml(step.requirement_id)}"
+                           placeholder="REQ-ID">
+                </td>
+                <td class="description-cell">
+                    <textarea class="table-cell-textarea"
                               data-field="description"
                               data-index="${index}"
-                              rows="3">${escapeHtml(step.description)}</textarea>
-                </div>
-
-                <div class="test-step-field">
-                    <label class="field-label">Expected Result</label>
-                    <textarea class="editable-field expected-input"
+                              rows="${descRows}"
+                              placeholder="Requirement description">${escapeHtml(step.description)}</textarea>
+                </td>
+                <td class="expected-cell">
+                    <textarea class="table-cell-textarea"
                               data-field="expected_result"
                               data-index="${index}"
-                              rows="2">${escapeHtml(step.expected_result)}</textarea>
-                </div>
-            </div>
+                              rows="${expRows}"
+                              placeholder="Expected result">${escapeHtml(step.expected_result)}</textarea>
+                </td>
+                <td class="status-cell">-</td>
+                <td class="status-cell">-</td>
+                <td class="status-cell">-</td>
+            </tr>
         `;
     });
 
-    html += '</div>';
+    html += `
+            </tbody>
+        </table>
+        <div class="table-info">
+            ℹ️ Pass/Fail, Initial, and Date columns will remain empty in the downloaded document for completion during testing.
+        </div>
+    `;
+
     previewContent.innerHTML = html;
 
     // Add event listeners to update test steps when edited
-    document.querySelectorAll('.editable-field').forEach(field => {
-        field.addEventListener('change', (e) => {
+    document.querySelectorAll('.table-cell-input, .table-cell-textarea').forEach(field => {
+        // Update on change
+        field.addEventListener('input', (e) => {
             const index = parseInt(e.target.dataset.index);
             const fieldName = e.target.dataset.field;
             currentTestSteps[index][fieldName] = e.target.value;
         });
+
+        // Auto-resize textareas
+        if (field.tagName === 'TEXTAREA') {
+            field.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+            // Initial resize
+            field.style.height = field.scrollHeight + 'px';
+        }
     });
 }
 

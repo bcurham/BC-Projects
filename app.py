@@ -41,40 +41,91 @@ def extract_text_from_pdf(file_path):
     text = ""
     try:
         with pdfplumber.open(file_path) as pdf:
-            for page in pdf.pages:
+            print(f"PDF has {len(pdf.pages)} pages")
+            for i, page in enumerate(pdf.pages):
                 page_text = page.extract_text()
                 if page_text:
                     text += page_text + "\n"
+                    print(f"Page {i+1}: extracted {len(page_text)} characters")
     except Exception as e:
         # Fallback to PyPDF2
         print(f"pdfplumber failed, trying PyPDF2: {e}")
-        with open(file_path, 'rb') as file:
-            pdf_reader = PyPDF2.PdfReader(file)
-            for page in pdf_reader.pages:
-                text += page.extract_text() + "\n"
+        try:
+            with open(file_path, 'rb') as file:
+                pdf_reader = PyPDF2.PdfReader(file)
+                print(f"PDF has {len(pdf_reader.pages)} pages")
+                for i, page in enumerate(pdf_reader.pages):
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text + "\n"
+                        print(f"Page {i+1}: extracted {len(page_text)} characters")
+        except Exception as e2:
+            print(f"PyPDF2 also failed: {e2}")
+            raise ValueError(f"Unable to extract text from PDF. The file may be password-protected, corrupted, or contains only images. Error: {str(e2)}")
+
+    if not text.strip():
+        raise ValueError("PDF file appears to be empty or contains only images. Please ensure the PDF has extractable text.")
+
     return text
 
 
 def extract_text_from_docx(file_path):
-    """Extract text from Word document"""
-    doc = Document(file_path)
-    text = ""
-    for paragraph in doc.paragraphs:
-        text += paragraph.text + "\n"
+    """Extract text from Word document including paragraphs and tables"""
+    try:
+        doc = Document(file_path)
+        text = ""
 
-    # Also extract text from tables
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                text += cell.text + "\n"
+        # Extract from paragraphs
+        paragraph_count = 0
+        for paragraph in doc.paragraphs:
+            if paragraph.text.strip():
+                text += paragraph.text + "\n"
+                paragraph_count += 1
 
-    return text
+        print(f"Extracted {paragraph_count} paragraphs from Word document")
+
+        # Extract from tables
+        table_count = 0
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    if cell.text.strip():
+                        text += cell.text + "\n"
+            table_count += 1
+
+        print(f"Extracted text from {table_count} tables in Word document")
+
+        if not text.strip():
+            raise ValueError("Word document appears to be empty or contains no extractable text.")
+
+        return text
+    except Exception as e:
+        print(f"Error extracting from Word document: {e}")
+        raise ValueError(f"Unable to read Word document. The file may be corrupted or in an unsupported format. Error: {str(e)}")
 
 
 def extract_text_from_txt(file_path):
     """Extract text from plain text file"""
-    with open(file_path, 'r', encoding='utf-8') as file:
-        return file.read()
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            text = file.read()
+
+        if not text.strip():
+            raise ValueError("Text file is empty.")
+
+        print(f"Extracted {len(text)} characters from text file")
+        return text
+    except UnicodeDecodeError:
+        # Try different encodings
+        try:
+            with open(file_path, 'r', encoding='latin-1') as file:
+                text = file.read()
+            print(f"Extracted {len(text)} characters from text file using latin-1 encoding")
+            return text
+        except Exception as e:
+            raise ValueError(f"Unable to read text file. The file encoding may not be supported. Error: {str(e)}")
+    except Exception as e:
+        raise ValueError(f"Unable to read text file: {str(e)}")
 
 
 def extract_urs_text(file_path, filename):

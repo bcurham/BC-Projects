@@ -193,98 +193,156 @@ input[type="file"]:focus {
     margin-top: 2rem;
 }
 
-.preview-instructions {
+.preview-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.preview-header h2 {
+    margin-bottom: 0.5rem;
+}
+
+.preview-subtitle {
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background-color: #eff6ff;
-    border-radius: 6px;
-    border-left: 4px solid var(--primary-color);
+    font-size: 0.95rem;
+    margin: 0;
 }
 
-#previewContent {
-    max-height: 500px;
-    overflow-y: auto;
+.table-preview-container {
+    overflow-x: auto;
     margin-bottom: 1.5rem;
-}
-
-.test-step {
-    padding: 1.25rem;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    margin-bottom: 1rem;
-    background-color: var(--card-background);
-    transition: all 0.2s;
-}
-
-.test-step:hover {
-    box-shadow: var(--shadow);
-}
-
-.test-step-header {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.step-no {
-    color: var(--primary-color);
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-.req-id {
-    color: var(--text-secondary);
-    font-weight: 600;
-    padding: 0.25rem 0.75rem;
-    background-color: var(--background);
-    border-radius: 4px;
-}
-
-.editable-field {
-    display: block;
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 0.95rem;
-    line-height: 1.5;
     background-color: white;
-    transition: all 0.2s;
-    font-family: inherit;
 }
 
-.editable-field:focus {
+.test-script-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.test-script-table thead {
+    background-color: var(--primary-color);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.test-script-table th {
+    padding: 0.75rem 0.5rem;
+    text-align: left;
+    font-weight: 600;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.85rem;
+}
+
+.test-script-table th:last-child {
+    border-right: none;
+}
+
+.test-script-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+.test-script-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.test-script-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.test-script-table td {
+    padding: 0.5rem;
+    border-right: 1px solid var(--border-color);
+    vertical-align: top;
+}
+
+.test-script-table td:last-child {
+    border-right: none;
+}
+
+.table-cell-input,
+.table-cell-textarea {
+    width: 100%;
+    border: 1px solid transparent;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    background-color: transparent;
+    font-family: inherit;
+    transition: all 0.2s;
+    resize: none;
+}
+
+.table-cell-input:focus,
+.table-cell-textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    background-color: #fffbeb;
+    border-radius: 4px;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.field-label {
-    display: block;
+.table-cell-input:hover,
+.table-cell-textarea:hover {
+    background-color: #f8fafc;
+    border-radius: 4px;
+}
+
+.step-cell {
+    text-align: center;
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-    font-size: 0.875rem;
+    color: var(--primary-color);
+    width: 60px;
 }
 
-.test-step-field {
-    margin-bottom: 1rem;
+.req-id-cell {
+    min-width: 100px;
+    max-width: 120px;
 }
 
-.test-step-field:last-child {
-    margin-bottom: 0;
+.description-cell {
+    min-width: 250px;
+}
+
+.expected-cell {
+    min-width: 200px;
+}
+
+.status-cell {
+    text-align: center;
+    width: 80px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.table-info {
+    padding: 1rem;
+    background-color: #eff6ff;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
 }
 
 .preview-actions {
     display: flex;
     gap: 1rem;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin-top: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
+}
+
+.preview-actions .btn span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .alert {
