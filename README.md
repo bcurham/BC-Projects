@@ -77,6 +77,12 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+**Windows Users:** If you encounter a cryptography/pdfplumber error, use the minimal requirements:
+```bash
+pip install -r requirements-minimal.txt
+```
+The app will work perfectly using PyPDF2 instead. See [WINDOWS_SETUP.md](WINDOWS_SETUP.md) for detailed instructions.
+
 ### 4. Configure Environment Variables
 
 ```bash
@@ -279,6 +285,38 @@ row_cells[6].text = ''                                # Date
 ```
 
 ## Troubleshooting
+
+### Issue: "ImportError: DLL load failed" or "cryptography _rust" error (Windows)
+
+**Symptoms:**
+```
+ImportError: DLL load failed while importing _rust: The specified procedure could not be found.
+```
+
+**This is a known Windows compatibility issue with the cryptography library used by pdfplumber.**
+
+**Solutions:**
+
+**Quick Fix (Recommended):**
+```bash
+pip uninstall pdfplumber cryptography
+pip install -r requirements-minimal.txt
+```
+The app will automatically use PyPDF2 for PDF extraction. No functionality is lost!
+
+**Alternative Solutions:**
+1. Install [Visual C++ Redistributables](https://aka.ms/vs/17/release/vc_redist.x64.exe)
+2. See detailed guide: [WINDOWS_SETUP.md](WINDOWS_SETUP.md)
+
+**Verification:**
+When you run `python app.py`, you should see:
+```
+⚠ pdfplumber not available (will use PyPDF2 only)
+  This is normal on some Windows systems. PDF extraction will still work.
+```
+This is perfectly fine and means the app is working correctly!
+
+---
 
 ### Issue: "No text could be extracted from URS document"
 

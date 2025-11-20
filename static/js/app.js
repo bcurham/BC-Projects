@@ -101,10 +101,6 @@ function renderPreview(testSteps) {
     `;
 
     testSteps.forEach((step, index) => {
-        // Auto-resize textarea based on content
-        const descRows = Math.max(2, Math.ceil(step.description.length / 50));
-        const expRows = Math.max(2, Math.ceil(step.expected_result.length / 40));
-
         html += `
             <tr data-index="${index}">
                 <td class="step-cell">${step.step_no}</td>
@@ -117,17 +113,15 @@ function renderPreview(testSteps) {
                            placeholder="REQ-ID">
                 </td>
                 <td class="description-cell">
-                    <textarea class="table-cell-textarea"
+                    <textarea class="table-cell-textarea auto-resize"
                               data-field="description"
                               data-index="${index}"
-                              rows="${descRows}"
                               placeholder="Requirement description">${escapeHtml(step.description)}</textarea>
                 </td>
                 <td class="expected-cell">
-                    <textarea class="table-cell-textarea"
+                    <textarea class="table-cell-textarea auto-resize"
                               data-field="expected_result"
                               data-index="${index}"
-                              rows="${expRows}"
                               placeholder="Expected result">${escapeHtml(step.expected_result)}</textarea>
                 </td>
                 <td class="status-cell">-</td>
@@ -154,18 +148,29 @@ function renderPreview(testSteps) {
             const index = parseInt(e.target.dataset.index);
             const fieldName = e.target.dataset.field;
             currentTestSteps[index][fieldName] = e.target.value;
-        });
 
-        // Auto-resize textareas
-        if (field.tagName === 'TEXTAREA') {
-            field.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = this.scrollHeight + 'px';
-            });
-            // Initial resize
-            field.style.height = field.scrollHeight + 'px';
-        }
+            // Auto-resize textareas as user types
+            if (e.target.tagName === 'TEXTAREA') {
+                autoResizeTextarea(e.target);
+            }
+        });
     });
+
+    // Initial resize of all textareas to fit content
+    // Use setTimeout to ensure DOM is fully rendered
+    setTimeout(() => {
+        document.querySelectorAll('.table-cell-textarea').forEach(textarea => {
+            autoResizeTextarea(textarea);
+        });
+    }, 50);
+}
+
+// Auto-resize textarea to fit content
+function autoResizeTextarea(textarea) {
+    // Reset height to auto to get the correct scrollHeight
+    textarea.style.height = 'auto';
+    // Set to scrollHeight with minimum height of 60px
+    textarea.style.height = Math.max(60, textarea.scrollHeight + 2) + 'px';
 }
 
 // Escape HTML to prevent XSS

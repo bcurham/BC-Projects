@@ -1,0 +1,12 @@
+# Minimal requirements for Windows systems with cryptography issues
+# Use this if standard requirements.txt fails with cryptography/pdfplumber errors
+
+Flask==3.0.0
+python-docx==1.1.0
+PyPDF2==3.0.1
+anthropic==0.25.0
+python-dotenv==1.0.0
+Werkzeug==3.0.1
+
+# pdfplumber is EXCLUDED - PyPDF2 will handle all PDF extraction
+# The app will automatically detect this and work without pdfplumber
