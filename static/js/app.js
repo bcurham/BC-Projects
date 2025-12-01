@@ -226,11 +226,28 @@ uploadForm.addEventListener('submit', async (e) => {
 closePreview.addEventListener('click', () => {
     previewSection.classList.add('hidden');
     document.querySelector('.upload-section').style.display = 'block';
+
+    // Hide enhanced features section
+    const enhancedFeaturesSection = document.getElementById('enhancedFeaturesSection');
+    if (enhancedFeaturesSection) {
+        enhancedFeaturesSection.classList.add('hidden');
+    }
+
+    // Reset session data
     currentSessionId = null;
     currentTestSteps = [];
+    currentUrsText = null;
+
+    // Reset form
     uploadForm.reset();
     ursFileName.textContent = 'No file selected';
     templateFileName.textContent = 'No file selected';
+
+    // Hide any result sections
+    const qualityResults = document.getElementById('qualityResults');
+    const changeResults = document.getElementById('changeResults');
+    if (qualityResults) qualityResults.classList.add('hidden');
+    if (changeResults) changeResults.classList.add('hidden');
 });
 
 // Download final Word document
@@ -269,16 +286,24 @@ downloadBtn.addEventListener('click', async () => {
             hideLoading();
             showSuccess();
 
+            // Show enhanced features section after successful download
+            const enhancedFeaturesSection = document.getElementById('enhancedFeaturesSection');
+            if (enhancedFeaturesSection) {
+                enhancedFeaturesSection.classList.remove('hidden');
+                enhancedFeaturesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Don't reset immediately - keep data for enhanced features
             // Reset everything
-            setTimeout(() => {
-                previewSection.classList.add('hidden');
-                document.querySelector('.upload-section').style.display = 'block';
-                currentSessionId = null;
-                currentTestSteps = [];
-                uploadForm.reset();
-                ursFileName.textContent = 'No file selected';
-                templateFileName.textContent = 'No file selected';
-            }, 2000);
+            // setTimeout(() => {
+            //     previewSection.classList.add('hidden');
+            //     document.querySelector('.upload-section').style.display = 'block';
+            //     currentSessionId = null;
+            //     currentTestSteps = [];
+            //     uploadForm.reset();
+            //     ursFileName.textContent = 'No file selected';
+            //     templateFileName.textContent = 'No file selected';
+            // }, 2000);
         } else {
             const data = await response.json();
             hideLoading();
@@ -289,3 +314,408 @@ downloadBtn.addEventListener('click', async () => {
         showError('Network error: ' + error.message);
     }
 });
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ENHANCED VALIDATION FEATURES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Additional session data for enhanced features
+let currentUrsText = null;
+
+// Tab switching functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const featureTabs = document.querySelectorAll('.feature-tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    featureTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.tab;
+
+            // Remove active class from all tabs and contents
+            featureTabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding content
+            tab.classList.add('active');
+            const targetContent = document.getElementById(targetTab + 'Tab');
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        });
+    });
+
+    // Enhanced feature buttons
+    setupEnhancedFeatureButtons();
+});
+
+// Setup all enhanced feature button event listeners
+function setupEnhancedFeatureButtons() {
+    // RTM Excel
+    const rtmExcelBtn = document.getElementById('generateRTMExcel');
+    if (rtmExcelBtn) {
+        rtmExcelBtn.addEventListener('click', async () => {
+            await generateRTM('excel');
+        });
+    }
+
+    // RTM Word
+    const rtmWordBtn = document.getElementById('generateRTMWord');
+    if (rtmWordBtn) {
+        rtmWordBtn.addEventListener('click', async () => {
+            await generateRTM('word');
+        });
+    }
+
+    // Validation Plan
+    const vmpBtn = document.getElementById('generateVMP');
+    if (vmpBtn) {
+        vmpBtn.addEventListener('click', async () => {
+            await generateValidationDoc('plan');
+        });
+    }
+
+    // Validation Summary Report
+    const vsrBtn = document.getElementById('generateVSR');
+    if (vsrBtn) {
+        vsrBtn.addEventListener('click', async () => {
+            await generateValidationDoc('summary');
+        });
+    }
+
+    // Quality Check
+    const qualityBtn = document.getElementById('runQualityCheck');
+    if (qualityBtn) {
+        qualityBtn.addEventListener('click', async () => {
+            await runQualityCheck();
+        });
+    }
+
+    // Change Analysis
+    const changeBtn = document.getElementById('runChangeAnalysis');
+    if (changeBtn) {
+        changeBtn.addEventListener('click', async () => {
+            await runChangeAnalysis();
+        });
+    }
+
+    // Audit Package
+    const auditBtn = document.getElementById('exportAuditPackage');
+    if (auditBtn) {
+        auditBtn.addEventListener('click', async () => {
+            await exportAuditPackage();
+        });
+    }
+}
+
+// Generate Requirements Traceability Matrix
+async function generateRTM(format) {
+    if (!currentTestSteps || currentTestSteps.length === 0) {
+        showError('No test steps available. Please generate a test script first.');
+        return;
+    }
+
+    const endpoint = format === 'excel' ? '/api/generate-rtm-excel' : '/api/generate-rtm-word';
+    const filename = format === 'excel' ? 'RTM_Traceability_Matrix.xlsx' : 'RTM_Traceability_Matrix.docx';
+
+    showLoading(`Generating RTM (${format.toUpperCase()})...`);
+
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                test_steps: currentTestSteps
+            })
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            downloadFile(blob, filename);
+            hideLoading();
+            showSuccess();
+        } else {
+            const data = await response.json();
+            hideLoading();
+            showError(data.error || `Failed to generate RTM (${format}).`);
+        }
+    } catch (error) {
+        hideLoading();
+        showError('Network error: ' + error.message);
+    }
+}
+
+// Generate Validation Documentation (VMP or VSR)
+async function generateValidationDoc(docType) {
+    if (!currentTestSteps || currentTestSteps.length === 0) {
+        showError('No test steps available. Please generate a test script first.');
+        return;
+    }
+
+    const endpoint = docType === 'plan' ? '/api/generate-validation-plan' : '/api/generate-validation-summary';
+    const filename = docType === 'plan' ? 'Validation_Master_Plan.docx' : 'Validation_Summary_Report.docx';
+    const docName = docType === 'plan' ? 'Validation Master Plan' : 'Validation Summary Report';
+
+    showLoading(`Generating ${docName}...`);
+
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                test_steps: currentTestSteps,
+                session_id: currentSessionId
+            })
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            downloadFile(blob, filename);
+            hideLoading();
+            showSuccess();
+        } else {
+            const data = await response.json();
+            hideLoading();
+            showError(data.error || `Failed to generate ${docName}.`);
+        }
+    } catch (error) {
+        hideLoading();
+        showError('Network error: ' + error.message);
+    }
+}
+
+// Run Quality Check
+async function runQualityCheck() {
+    if (!currentSessionId) {
+        showError('No URS document available. Please generate a test script first.');
+        return;
+    }
+
+    showLoading('Analyzing requirement quality with AI...');
+
+    try {
+        const response = await fetch('/api/check-quality', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                session_id: currentSessionId
+            })
+        });
+
+        const data = await response.json();
+        hideLoading();
+
+        if (response.ok) {
+            renderQualityResults(data);
+        } else {
+            showError(data.error || 'Failed to run quality check.');
+        }
+    } catch (error) {
+        hideLoading();
+        showError('Network error: ' + error.message);
+    }
+}
+
+// Render quality check results
+function renderQualityResults(data) {
+    const resultsDiv = document.getElementById('qualityResults');
+    if (!resultsDiv) return;
+
+    let scoreClass = 'score-good';
+    if (data.overall_score < 70) scoreClass = 'score-poor';
+    else if (data.overall_score < 85) scoreClass = 'score-fair';
+
+    let html = `
+        <h4>Quality Analysis Results</h4>
+        <div class="quality-score ${scoreClass}">
+            Overall Quality Score: ${data.overall_score}%
+        </div>
+        <p><strong>Analysis Summary:</strong> ${data.summary}</p>
+    `;
+
+    if (data.issues && data.issues.length > 0) {
+        html += '<h4>Issues Found:</h4>';
+        data.issues.forEach(issue => {
+            const severityClass = `severity-${issue.severity.toLowerCase()}`;
+            html += `
+                <div class="quality-issue">
+                    <div class="issue-header">
+                        <span class="issue-category">${issue.category}</span>
+                        <span class="issue-severity ${severityClass}">${issue.severity}</span>
+                    </div>
+                    <p><strong>Issue:</strong> ${issue.description}</p>
+                    <p><strong>Suggestion:</strong> ${issue.suggestion}</p>
+                    ${issue.affected_requirements ? `<p><strong>Affected:</strong> ${issue.affected_requirements.join(', ')}</p>` : ''}
+                </div>
+            `;
+        });
+    } else {
+        html += '<p style="color: green; font-weight: 600;">✓ No significant quality issues found!</p>';
+    }
+
+    resultsDiv.innerHTML = html;
+    resultsDiv.classList.remove('hidden');
+    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Run Change Analysis
+async function runChangeAnalysis() {
+    if (!currentSessionId) {
+        showError('No URS document available. Please generate a test script first.');
+        return;
+    }
+
+    showLoading('Analyzing changes from previous version...');
+
+    try {
+        const response = await fetch('/api/analyze-changes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                test_steps: currentTestSteps,
+                session_id: currentSessionId
+            })
+        });
+
+        const data = await response.json();
+        hideLoading();
+
+        if (response.ok) {
+            renderChangeResults(data);
+        } else {
+            showError(data.error || 'Failed to analyze changes.');
+        }
+    } catch (error) {
+        hideLoading();
+        showError('Network error: ' + error.message);
+    }
+}
+
+// Render change analysis results
+function renderChangeResults(data) {
+    const resultsDiv = document.getElementById('changeResults');
+    if (!resultsDiv) return;
+
+    let html = `
+        <h4>Change Analysis Results</h4>
+    `;
+
+    if (data.is_first_baseline) {
+        html += `
+            <div class="change-summary">
+                <p style="color: var(--primary-color); font-weight: 600;">
+                    ℹ️ This is the first version. A baseline has been saved for future comparisons.
+                </p>
+            </div>
+        `;
+    } else {
+        const impactClass = data.impact_level === 'HIGH' ? 'impact-high' :
+                          data.impact_level === 'MEDIUM' ? 'impact-medium' : 'impact-low';
+
+        html += `
+            <div class="change-summary">
+                <div class="change-stat">
+                    <strong>Impact Level:</strong>
+                    <span class="impact-badge ${impactClass}">${data.impact_level}</span>
+                </div>
+                <div class="change-stat">
+                    <strong>Requirements Added:</strong>
+                    <span>${data.summary.added}</span>
+                </div>
+                <div class="change-stat">
+                    <strong>Requirements Removed:</strong>
+                    <span>${data.summary.removed}</span>
+                </div>
+                <div class="change-stat">
+                    <strong>Requirements Modified:</strong>
+                    <span>${data.summary.modified}</span>
+                </div>
+                <div class="change-stat">
+                    <strong>Requirements Unchanged:</strong>
+                    <span>${data.summary.unchanged}</span>
+                </div>
+            </div>
+
+            <h4>Impact Analysis:</h4>
+            <p><strong>Tests to Add:</strong> ${data.impact.tests_to_add}</p>
+            <p><strong>Tests to Update:</strong> ${data.impact.tests_to_update}</p>
+            <p><strong>Tests to Reuse:</strong> ${data.impact.tests_to_reuse}</p>
+            <p><strong>Recommendation:</strong> ${data.recommendations}</p>
+        `;
+
+        if (data.changes && data.changes.length > 0) {
+            html += '<h4>Detailed Changes:</h4>';
+            data.changes.forEach(change => {
+                const changeColor = change.type === 'added' ? 'green' :
+                                  change.type === 'removed' ? 'red' : 'orange';
+                html += `
+                    <div class="quality-issue" style="border-left-color: ${changeColor};">
+                        <p><strong>${change.type.toUpperCase()}:</strong> ${change.requirement_id}</p>
+                        <p>${change.description}</p>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    resultsDiv.innerHTML = html;
+    resultsDiv.classList.remove('hidden');
+    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Export Complete Audit Package
+async function exportAuditPackage() {
+    if (!currentTestSteps || currentTestSteps.length === 0 || !currentSessionId) {
+        showError('No test script available. Please generate a test script first.');
+        return;
+    }
+
+    showLoading('Generating complete audit package... This may take a minute.');
+
+    try {
+        const response = await fetch('/api/export-audit-package', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                test_steps: currentTestSteps,
+                session_id: currentSessionId
+            })
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadFile(blob, `Audit_Package_${timestamp}.zip`);
+            hideLoading();
+            showSuccess();
+        } else {
+            const data = await response.json();
+            hideLoading();
+            showError(data.error || 'Failed to generate audit package.');
+        }
+    } catch (error) {
+        hideLoading();
+        showError('Network error: ' + error.message);
+    }
+}
+
+// Helper function to download files
+function downloadFile(blob, filename) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+}

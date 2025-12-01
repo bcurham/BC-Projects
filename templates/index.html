@@ -75,6 +75,112 @@
                 </div>
             </div>
 
+            <!-- Enhanced Validation Features (Optional - appears after test script generation) -->
+            <div id="enhancedFeaturesSection" class="enhanced-features-section hidden">
+                <div class="card">
+                    <div class="features-header">
+                        <h2>📊 Additional Validation Tools</h2>
+                        <p class="features-subtitle">Generate compliance documentation and analysis reports</p>
+                    </div>
+
+                    <!-- Feature Tabs -->
+                    <div class="feature-tabs">
+                        <button class="feature-tab active" data-tab="rtm">
+                            <span class="tab-icon">🔗</span>
+                            <span class="tab-text">Traceability Matrix</span>
+                        </button>
+                        <button class="feature-tab" data-tab="validation">
+                            <span class="tab-icon">📋</span>
+                            <span class="tab-text">Validation Docs</span>
+                        </button>
+                        <button class="feature-tab" data-tab="quality">
+                            <span class="tab-icon">✓</span>
+                            <span class="tab-text">Quality Check</span>
+                        </button>
+                        <button class="feature-tab" data-tab="changes">
+                            <span class="tab-icon">🔄</span>
+                            <span class="tab-text">Change Impact</span>
+                        </button>
+                        <button class="feature-tab" data-tab="audit">
+                            <span class="tab-icon">📦</span>
+                            <span class="tab-text">Audit Package</span>
+                        </button>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div class="tab-contents">
+                        <!-- RTM Tab -->
+                        <div id="rtmTab" class="tab-content active">
+                            <h3>Requirements Traceability Matrix</h3>
+                            <p>Generate RTM mapping all requirements to test cases</p>
+                            <div class="button-group">
+                                <button id="generateRTMExcel" class="btn btn-primary">
+                                    <span>Download RTM (Excel)</span>
+                                </button>
+                                <button id="generateRTMWord" class="btn btn-secondary">
+                                    <span>Download RTM (Word)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Validation Docs Tab -->
+                        <div id="validationTab" class="tab-content">
+                            <h3>Validation Documentation</h3>
+                            <p>Generate GxP-compliant validation master plan and summary report</p>
+                            <div class="button-group">
+                                <button id="generateVMP" class="btn btn-primary">
+                                    <span>Download Validation Plan (VMP)</span>
+                                </button>
+                                <button id="generateVSR" class="btn btn-secondary">
+                                    <span>Download Summary Report (VSR)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quality Check Tab -->
+                        <div id="qualityTab" class="tab-content">
+                            <h3>Requirements Quality Analysis</h3>
+                            <p>AI-powered analysis of requirement quality and testability</p>
+                            <button id="runQualityCheck" class="btn btn-primary">
+                                <span>Run Quality Check</span>
+                            </button>
+                            <div id="qualityResults" class="quality-results hidden"></div>
+                        </div>
+
+                        <!-- Change Impact Tab -->
+                        <div id="changesTab" class="tab-content">
+                            <h3>Change Impact Analysis</h3>
+                            <p>Compare against previous URS versions to identify changes</p>
+                            <button id="runChangeAnalysis" class="btn btn-primary">
+                                <span>Analyze Changes</span>
+                            </button>
+                            <div id="changeResults" class="change-results hidden"></div>
+                        </div>
+
+                        <!-- Audit Package Tab -->
+                        <div id="auditTab" class="tab-content">
+                            <h3>Complete Audit Package</h3>
+                            <p>Export all validation artifacts as a comprehensive ZIP package</p>
+                            <div class="audit-package-info">
+                                <h4>Package includes:</h4>
+                                <ul>
+                                    <li>✓ User Requirements Specification (URS)</li>
+                                    <li>✓ Test Scripts</li>
+                                    <li>✓ Requirements Traceability Matrix (RTM)</li>
+                                    <li>✓ Validation Master Plan (VMP)</li>
+                                    <li>✓ Validation Summary Report (VSR)</li>
+                                    <li>✓ Quality Analysis Report</li>
+                                    <li>✓ Package Metadata</li>
+                                </ul>
+                            </div>
+                            <button id="exportAuditPackage" class="btn btn-primary btn-large">
+                                <span>📦 Export Complete Audit Package</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="errorSection" class="error-section hidden">
                 <div class="alert alert-error">
                     <strong>Error:</strong>

@@ -20,6 +20,20 @@ except ImportError as e:
     print(f"⚠ pdfplumber not available (will use PyPDF2 only): {e}")
     print("  This is normal on some Windows systems. PDF extraction will still work.")
 
+# Import new feature modules (optional enhancements)
+try:
+    from modules import (
+        generate_rtm_excel, generate_rtm_word,
+        ChangeAnalyzer, ValidationDocGenerator,
+        QualityChecker, AuditPackageExporter
+    )
+    ENHANCED_FEATURES_AVAILABLE = True
+    print("✓ Enhanced validation features loaded successfully")
+except ImportError as e:
+    ENHANCED_FEATURES_AVAILABLE = False
+    print(f"⚠ Enhanced features not available: {e}")
+    print("  Core test script generation will still work.")
+
 # Load environment variables
 load_dotenv()
 
@@ -36,6 +50,15 @@ api_key = os.getenv('ANTHROPIC_API_KEY')
 if not api_key:
     print("WARNING: ANTHROPIC_API_KEY not set in environment variables!")
 client = anthropic.Anthropic(api_key=api_key) if api_key else None
+
+# Initialize enhanced feature modules (if available)
+if ENHANCED_FEATURES_AVAILABLE:
+    os.makedirs('baselines', exist_ok=True)  # For change analysis
+    change_analyzer = ChangeAnalyzer()
+    validation_doc_gen = ValidationDocGenerator()
+    quality_checker = QualityChecker(client)
+    audit_exporter = AuditPackageExporter()
+    print("✓ Enhanced feature instances initialized")
 
 ALLOWED_URS_EXTENSIONS = {'pdf', 'docx', 'txt'}
 ALLOWED_TEMPLATE_EXTENSIONS = {'docx'}
@@ -470,6 +493,240 @@ def preview_test_steps():
         print(traceback.format_exc())
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ENHANCED VALIDATION FEATURES (New Routes - Do NOT modify existing routes above)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.route('/api/generate-rtm-excel', methods=['POST'])
+def generate_rtm_excel_endpoint():
+    """Generate RTM as Excel file"""
+    if not ENHANCED_FEATURES_AVAILABLE:
+        return jsonify({'error': 'Enhanced features not available'}), 503
+
+    try:
+        data = request.get_json()
+        test_steps = data.get('test_steps', [])
+
+        if not test_steps:
+            return jsonify({'error': 'No test steps provided'}), 400
+
+        excel_file = generate_rtm_excel(test_steps)
+
+        return send_file(
+            excel_file,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name='RTM_Requirements_Traceability_Matrix.xlsx'
+        )
+
+    except Exception as e:
+        print(f"RTM Excel Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': f'Failed to generate RTM: {str(e)}'}), 500
+
+
+@app.route('/api/generate-rtm-word', methods=['POST'])
+def generate_rtm_word_endpoint():
+    """Generate RTM as Word document"""
+    if not ENHANCED_FEATURES_AVAILABLE:
+        return jsonify({'error': 'Enhanced features not available'}), 503
+
+    try:
+        data = request.get_json()
+        test_steps = data.get('test_steps', [])
+
+        if not test_steps:
+            return jsonify({'error': 'No test steps provided'}), 400
+
+        word_file = generate_rtm_word(test_steps)
+
+        return send_file(
+            word_file,
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            as_attachment=True,
+            download_name='RTM_Requirements_Traceability_Matrix.docx'
+        )
+
+    except Exception as e:
+        print(f"RTM Word Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': f'Failed to generate RTM: {str(e)}'}), 500
+
+
+@app.route('/api/analyze-changes', methods=['POST'])
+def analyze_changes_endpoint():
+    """Analyze changes between URS versions"""
+    if not ENHANCED_FEATURES_AVAILABLE:
+        return jsonify({'error': 'Enhanced features not available'}), 503
+
+    try:
+        data = request.get_json()
+        urs_text = data.get('urs_text', '')
+        test_steps = data.get('test_steps', [])
+        project_name = data.get('project_name', 'default')
+        save_baseline = data.get('save_baseline', True)
+
+        if not urs_text or not test_steps:
+            return jsonify({'error': 'URS text and test steps required'}), 400
+
+        # Analyze changes
+        change_report = change_analyzer.analyze_changes(urs_text, test_steps, project_name)
+
+        # Save as baseline if requested
+        if save_baseline:
+            baseline_id = change_analyzer.save_baseline(urs_text, test_steps, project_name)
+            change_report['new_baseline_id'] = baseline_id
+
+        return jsonify(change_report)
+
+    except Exception as e:
+        print(f"Change Analysis Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': f'Failed to analyze changes: {str(e)}'}), 500
+
+
+@app.route('/api/generate-validation-plan', methods=['POST'])
+def generate_validation_plan_endpoint():
+    """Generate Validation Master Plan"""
+    if not ENHANCED_FEATURES_AVAILABLE:
+        return jsonify({'error': 'Enhanced features not available'}), 503
+
+    try:
+        data = request.get_json()
+        urs_text = data.get('urs_text', '')
+        test_steps = data.get('test_steps', [])
+
+        if not urs_text or not test_steps:
+            return jsonify({'error': 'URS text and test steps required'}), 400
+
+        vmp_file = validation_doc_gen.generate_validation_plan(urs_text, test_steps)
+
+        return send_file(
+            vmp_file,
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            as_attachment=True,
+            download_name='Validation_Master_Plan.docx'
+        )
+
+    except Exception as e:
+        print(f"VMP Generation Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': f'Failed to generate validation plan: {str(e)}'}), 500
+
+
+@app.route('/api/generate-validation-summary', methods=['POST'])
+def generate_validation_summary_endpoint():
+    """Generate Validation Summary Report"""
+    if not ENHANCED_FEATURES_AVAILABLE:
+        return jsonify({'error': 'Enhanced features not available'}), 503
+
+    try:
+        data = request.get_json()
+        test_steps = data.get('test_steps', [])
+
+        if not test_steps:
+            return jsonify({'error': 'Test steps required'}), 400
+
+        vsr_file = validation_doc_gen.generate_validation_summary(test_steps)
+
+        return send_file(
+            vsr_file,
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            as_attachment=True,
+            download_name='Validation_Summary_Report.docx'
+        )
+
+    except Exception as e:
+        print(f"VSR Generation Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': f'Failed to generate validation summary: {str(e)}'}), 500
+
+
+@app.route('/api/check-quality', methods=['POST'])
+def check_quality_endpoint():
+    """Check requirements quality"""
+    if not ENHANCED_FEATURES_AVAILABLE:
+        return jsonify({'error': 'Enhanced features not available'}), 503
+
+    try:
+        data = request.get_json()
+        urs_text = data.get('urs_text', '')
+
+        if not urs_text:
+            return jsonify({'error': 'URS text required'}), 400
+
+        quality_report = quality_checker.analyze_requirements(urs_text)
+
+        return jsonify(quality_report)
+
+    except Exception as e:
+        print(f"Quality Check Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': f'Failed to check quality: {str(e)}'}), 500
+
+
+@app.route('/api/export-audit-package', methods=['POST'])
+def export_audit_package_endpoint():
+    """Export complete audit package as ZIP"""
+    if not ENHANCED_FEATURES_AVAILABLE:
+        return jsonify({'error': 'Enhanced features not available'}), 503
+
+    try:
+        data = request.get_json()
+
+        # Required data
+        test_steps = data.get('test_steps', [])
+        urs_text = data.get('urs_text', '')
+
+        if not test_steps or not urs_text:
+            return jsonify({'error': 'Test steps and URS text required'}), 400
+
+        # Generate all components
+        package_data = {
+            'test_steps': test_steps,
+            'urs_text': urs_text
+        }
+
+        # Generate RTM files
+        try:
+            package_data['rtm_excel'] = generate_rtm_excel(test_steps)
+            package_data['rtm_word'] = generate_rtm_word(test_steps)
+        except Exception as e:
+            print(f"Warning: RTM generation failed: {e}")
+
+        # Generate validation documents
+        try:
+            package_data['validation_plan'] = validation_doc_gen.generate_validation_plan(urs_text, test_steps)
+            package_data['validation_summary'] = validation_doc_gen.generate_validation_summary(test_steps)
+        except Exception as e:
+            print(f"Warning: Validation docs generation failed: {e}")
+
+        # Generate quality report
+        try:
+            package_data['quality_report'] = quality_checker.analyze_requirements(urs_text)
+        except Exception as e:
+            print(f"Warning: Quality check failed: {e}")
+
+        # Create audit package ZIP
+        zip_file = audit_exporter.create_audit_package(**package_data)
+
+        return send_file(
+            zip_file,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name='Audit_Package_Complete.zip'
+        )
+
+    except Exception as e:
+        print(f"Audit Package Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': f'Failed to create audit package: {str(e)}'}), 500
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# END OF ENHANCED FEATURES
+# ═══════════════════════════════════════════════════════════════════════════════
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

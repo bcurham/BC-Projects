@@ -6,8 +6,12 @@ anthropic==0.25.0
 python-dotenv==1.0.0
 Werkzeug==3.0.1
 
+# Excel generation for RTM (optional but recommended)
+openpyxl==3.1.2
+
 # Optional: Enhanced PDF extraction (may fail on some Windows systems)
 # If pdfplumber fails to install, the app will still work using PyPDF2
 # To skip pdfplumber: pip install -r requirements.txt --no-deps
-# Then manually install: pip install Flask python-docx PyPDF2 anthropic python-dotenv Werkzeug
+# Then manually install: pip install Flask python-docx PyPDF2 anthropic python-dotenv Werkzeug openpyxl
 pdfplumber==0.10.3
+
