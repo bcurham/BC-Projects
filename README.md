@@ -4,6 +4,7 @@ A web-based automation system that parses User Requirements Specification (URS) 
 
 ## Features
 
+### Core Functionality
 ✨ **Simple 3-Step Workflow**: Upload → Generate → Download
 📄 **Multi-format URS Support**: Upload URS documents in PDF, DOCX, or TXT format
 🤖 **AI-Powered Extraction**: Claude AI intelligently extracts requirements and generates test steps
@@ -13,6 +14,69 @@ A web-based automation system that parses User Requirements Specification (URS) 
 ✅ **GxP Compliance**: Generates test scripts suitable for FDA 21 CFR Part 11 and GxP validation
 🎨 **Clean Interface**: Modern, intuitive web interface with real-time feedback
 🔒 **Session Management**: Secure, isolated sessions for multiple users
+
+### Enhanced Validation Features (NEW!)
+
+After generating your test script, access additional GxP compliance tools through the tabbed interface:
+
+#### 🔗 Requirements Traceability Matrix (RTM)
+- **One-click RTM generation** linking all requirements to test cases
+- **Dual format support**: Excel spreadsheet (.xlsx) and Word document (.docx)
+- **Bidirectional traceability**: Maps URS requirements to test steps
+- **Coverage analysis**: Shows 1:1 mapping between requirements and tests
+- **Professional formatting**: Color-coded headers, bordered cells, metadata footer
+
+#### 📋 Validation Documentation
+- **Validation Master Plan (VMP)**: Auto-generates comprehensive validation strategy document
+  - Document control section with version tracking
+  - Validation approach and test strategy
+  - Roles & responsibilities matrix
+  - Deliverables and acceptance criteria
+  - Timeline and approval workflow
+
+- **Validation Summary Report (VSR)**: Creates executive summary of validation activities
+  - Test execution summary with statistics
+  - Complete requirements traceability section
+  - Deviations and resolutions tracking
+  - Recommendations and conclusions
+  - Approval signature section
+
+#### ✓ Requirements Quality Check
+- **AI-powered quality analysis** of URS requirements
+- **Identifies quality issues**:
+  - Ambiguous or vague requirements
+  - Non-testable requirements
+  - Missing acceptance criteria
+  - Conflicting requirements
+  - Incomplete specifications
+- **Color-coded quality score**: Good (85%+), Fair (70-84%), Poor (<70%)
+- **Severity classification**: High, Medium, Low
+- **Actionable suggestions** for improvement
+- **Real-time analysis** with detailed issue breakdown
+
+#### 🔄 Change Impact Analysis
+- **Baseline management**: Automatically saves URS versions for comparison
+- **Version comparison**: Detects added, removed, and modified requirements
+- **Impact assessment**: Calculates test case impact (Low, Medium, High)
+- **Change statistics**:
+  - Requirements added, removed, modified, unchanged
+  - Tests to add, update, or reuse
+- **Actionable recommendations** for updating test scripts
+- **Detailed change log** with requirement-level differences
+
+#### 📦 Complete Audit Package
+- **One-click ZIP export** of all validation artifacts
+- **Comprehensive package** includes:
+  - Original User Requirements Specification (URS)
+  - Generated Test Scripts
+  - Requirements Traceability Matrix (RTM)
+  - Validation Master Plan (VMP)
+  - Validation Summary Report (VSR)
+  - Quality Analysis Report
+  - Package metadata with timestamps
+- **Organized folder structure** for easy navigation
+- **README included** explaining package contents
+- **Audit-ready format** for regulatory inspections
 
 ## Architecture
 
@@ -175,7 +239,9 @@ Your Word template should contain a table with the following columns:
 
 ## API Endpoints
 
-### POST `/api/generate-preview`
+### Core Endpoints
+
+#### POST `/api/generate-preview`
 
 Generate test steps from URS for preview and editing.
 
@@ -202,7 +268,7 @@ template_file: <file>
 }
 ```
 
-### POST `/api/generate-final`
+#### POST `/api/generate-final`
 
 Generate final Word document from edited test steps.
 
@@ -220,7 +286,156 @@ Content-Type: application/json
 - Success: Binary Word document (.docx)
 - Error: JSON with error message
 
-### POST `/api/preview`
+### Enhanced Validation Endpoints
+
+#### POST `/api/generate-rtm-excel`
+
+Generate Requirements Traceability Matrix as Excel spreadsheet.
+
+**Request:**
+```json
+{
+  "test_steps": [...]
+}
+```
+
+**Response:**
+- Success: Binary Excel file (.xlsx)
+- Error: JSON with error message
+
+#### POST `/api/generate-rtm-word`
+
+Generate Requirements Traceability Matrix as Word document.
+
+**Request:**
+```json
+{
+  "test_steps": [...]
+}
+```
+
+**Response:**
+- Success: Binary Word document (.docx)
+- Error: JSON with error message
+
+#### POST `/api/generate-validation-plan`
+
+Generate Validation Master Plan (VMP) document.
+
+**Request:**
+```json
+{
+  "test_steps": [...],
+  "session_id": "uuid"
+}
+```
+
+**Response:**
+- Success: Binary Word document (.docx)
+- Error: JSON with error message
+
+#### POST `/api/generate-validation-summary`
+
+Generate Validation Summary Report (VSR) document.
+
+**Request:**
+```json
+{
+  "test_steps": [...],
+  "session_id": "uuid"
+}
+```
+
+**Response:**
+- Success: Binary Word document (.docx)
+- Error: JSON with error message
+
+#### POST `/api/check-quality`
+
+Run AI-powered quality analysis on URS requirements.
+
+**Request:**
+```json
+{
+  "session_id": "uuid"
+}
+```
+
+**Response:**
+```json
+{
+  "overall_score": 85,
+  "summary": "Requirements are well-defined with minor improvements needed",
+  "issues": [
+    {
+      "category": "Ambiguity",
+      "severity": "Medium",
+      "description": "Requirement REQ-003 uses vague term 'quickly'",
+      "suggestion": "Specify exact time requirement (e.g., < 2 seconds)",
+      "affected_requirements": ["REQ-003"]
+    }
+  ]
+}
+```
+
+#### POST `/api/analyze-changes`
+
+Compare current URS version against baseline to identify changes.
+
+**Request:**
+```json
+{
+  "test_steps": [...],
+  "session_id": "uuid"
+}
+```
+
+**Response:**
+```json
+{
+  "is_first_baseline": false,
+  "impact_level": "MEDIUM",
+  "summary": {
+    "added": 2,
+    "removed": 1,
+    "modified": 3,
+    "unchanged": 15
+  },
+  "impact": {
+    "tests_to_add": 2,
+    "tests_to_update": 3,
+    "tests_to_reuse": 15
+  },
+  "recommendations": "Update 3 existing test cases and add 2 new tests",
+  "changes": [
+    {
+      "type": "added",
+      "requirement_id": "REQ-022",
+      "description": "New password complexity requirement"
+    }
+  ]
+}
+```
+
+#### POST `/api/export-audit-package`
+
+Export complete audit package as ZIP file with all validation artifacts.
+
+**Request:**
+```json
+{
+  "test_steps": [...],
+  "session_id": "uuid"
+}
+```
+
+**Response:**
+- Success: Binary ZIP file containing all validation documents
+- Error: JSON with error message
+
+### Legacy Endpoints
+
+#### POST `/api/preview`
 
 *(Legacy endpoint)* Preview test steps without template file.
 
@@ -242,20 +457,30 @@ urs_file: <file>
 
 ```
 BC-Projects/
-├── app.py                  # Main Flask application
-├── requirements.txt        # Python dependencies
-├── master_prompt.md        # Claude AI prompt instructions
-├── .env                    # Environment variables (not in git)
-├── .env.example           # Example environment file
-├── uploads/               # Temporary file storage (auto-created)
+├── app.py                      # Main Flask application
+├── requirements.txt            # Python dependencies (full)
+├── requirements-minimal.txt    # Minimal dependencies (Windows)
+├── master_prompt.md            # Claude AI prompt instructions
+├── .env                        # Environment variables (not in git)
+├── .env.example               # Example environment file
+├── WINDOWS_SETUP.md           # Windows-specific setup guide
+├── uploads/                   # Temporary file storage (auto-created)
+├── baselines/                 # URS version baselines (auto-created)
+├── modules/                   # Enhanced validation feature modules
+│   ├── __init__.py           # Module exports
+│   ├── rtm_generator.py      # RTM generation (Excel & Word)
+│   ├── change_analyzer.py    # Version comparison & impact analysis
+│   ├── validation_docs.py    # VMP & VSR document generation
+│   ├── quality_checker.py    # AI-powered quality analysis
+│   └── audit_package.py      # Complete audit package export
 ├── templates/
-│   └── index.html         # Main web interface
+│   └── index.html            # Main web interface
 ├── static/
 │   ├── css/
-│   │   └── styles.css     # Application styles
+│   │   └── styles.css        # Application styles
 │   └── js/
-│       └── app.js         # Frontend logic
-└── README.md              # This file
+│       └── app.js            # Frontend logic
+└── README.md                 # This file
 ```
 
 ## Customization
