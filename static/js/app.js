@@ -191,8 +191,8 @@ if (typeof EXISTING_PROJECT_ID !== 'undefined' && EXISTING_PROJECT_ID) {
     projectName = EXISTING_PROJECT_NAME || '';
 }
 
-// Generate preview - show modal first to get project name (only if no existing project)
-uploadForm.addEventListener('submit', (e) => {
+// Generate preview - directly upload files (no modal needed)
+uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     if (!ursFile.files[0] || !templateFile.files[0]) {
@@ -200,44 +200,12 @@ uploadForm.addEventListener('submit', (e) => {
         return;
     }
 
-    // If we already have a project ID, skip modal and upload directly
-    if (projectId) {
-        generateTestScript();
-        return;
-    }
-
-    // Show modal to get project name
-    const modal = document.getElementById('projectNameModal');
-    modal.classList.remove('hidden');
-
-    // Auto-suggest project name from URS filename
-    const suggestedName = ursFile.files[0].name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, ' ');
-    document.getElementById('projectName').value = suggestedName;
-    document.getElementById('projectDescription').value = '';
-
-    // Focus on project name input
-    setTimeout(() => {
-        document.getElementById('projectName').focus();
-        document.getElementById('projectName').select();
-    }, 100);
-});
-
-// Handle project name form submission
-document.getElementById('projectNameForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    projectName = document.getElementById('projectName').value.trim();
-    projectDescription = document.getElementById('projectDescription').value.trim();
-
+    // If no project name yet, auto-generate from filename
     if (!projectName) {
-        alert('Please enter a project name');
-        return;
+        projectName = ursFile.files[0].name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, ' ');
     }
 
-    // Close modal
-    closeProjectModal();
-
-    // Now proceed with file upload
+    // Generate test script directly
     await generateTestScript();
 });
 
@@ -289,18 +257,6 @@ async function generateTestScript() {
         showError('Network error: ' + error.message);
     }
 }
-
-// Close project modal
-function closeProjectModal() {
-    document.getElementById('projectNameModal').classList.add('hidden');
-}
-
-// Close modal when clicking outside
-document.getElementById('projectNameModal')?.addEventListener('click', (e) => {
-    if (e.target.id === 'projectNameModal') {
-        closeProjectModal();
-    }
-});
 
 // Close preview and reset
 closePreview.addEventListener('click', () => {
