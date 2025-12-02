@@ -6,6 +6,10 @@ anthropic==0.25.0
 python-dotenv==1.0.0
 Werkzeug==3.0.1
 
+# Database and authentication
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+
 # Excel generation for RTM (optional but recommended)
 openpyxl==3.1.2
 

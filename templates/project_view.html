@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} - Test Script Generator{% endblock %}
+
+{% block content %}
+<div class="project-view-container">
+    <div class="container" style="max-width: 1200px;">
+        <div class="project-view-header">
+            <div>
+                <h1>{{ project.name }}</h1>
+                {% if project.description %}
+                    <p class="project-view-subtitle">{{ project.description }}</p>
+                {% endif %}
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="{{ url_for('generator', project_id=project.project_id) }}" class="btn btn-primary">Edit Project</a>
+            </div>
+        </div>
+
+        <!-- Project Details -->
+        <div class="details-card">
+            <h2>Project Details</h2>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Status:</span>
+                    <span class="status-badge status-{{ project.status }}">{{ project.status | title }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Created:</span>
+                    <span>{{ project.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Last Updated:</span>
+                    <span>{{ project.updated_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">URS Document:</span>
+                    <span>{{ project.urs_filename or 'Not specified' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Template:</span>
+                    <span>{{ project.template_filename or 'Not specified' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Steps Preview -->
+        {% if test_steps %}
+            <div class="test-steps-card">
+                <h2>Test Steps ({{ test_steps|length }})</h2>
+                <div class="table-wrapper">
+                    <table class="test-script-table">
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Requirement #</th>
+                                <th>Description</th>
+                                <th>Expected Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for step in test_steps[:10] %}
+                                <tr>
+                                    <td>{{ step.step_no }}</td>
+                                    <td>{{ step.requirement_id }}</td>
+                                    <td>{{ step.description }}</td>
+                                    <td>{{ step.expected_result }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if test_steps|length > 10 %}
+                        <p class="table-note">Showing 10 of {{ test_steps|length }} test steps</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Version History -->
+        {% if versions %}
+            <div class="versions-card">
+                <h2>Version History</h2>
+                <div class="versions-list">
+                    {% for version in versions %}
+                        <div class="version-item">
+                            <div class="version-header">
+                                <strong>Version {{ version.version_number }}</strong>
+                                <span class="version-date">{{ version.created_at.strftime('%B %d, %Y') }}</span>
+                            </div>
+                            {% if version.notes %}
+                                <p class="version-notes">{{ version.notes }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.project-view-container {
+    min-height: calc(100vh - 200px);
+    padding: 40px 20px;
+}
+
+.project-view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.project-view-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.project-view-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.details-card, .test-steps-card, .versions-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.details-card h2, .test-steps-card h2, .versions-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.detail-item {
+    padding: 15px;
+    background: var(--background);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.test-script-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.test-script-table th {
+    background: var(--primary-color);
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.test-script-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.test-script-table tr:hover {
+    background: var(--background);
+}
+
+.table-note {
+    margin-top: 15px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.versions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.version-item {
+    padding: 15px;
+    background: var(--background);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.version-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.version-date {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.version-notes {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .project-view-header {
+        flex-direction: column;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .header-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

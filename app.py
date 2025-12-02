@@ -1,7 +1,7 @@
 import os
 import json
 import uuid
-from flask import Flask, request, jsonify, send_file, render_template, session
+from flask import Flask, request, jsonify, send_file, render_template, session, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import anthropic
@@ -9,6 +9,12 @@ from docx import Document
 import PyPDF2
 from io import BytesIO
 import traceback
+from datetime import datetime
+
+# Database and authentication imports
+from flask_login import LoginManager, login_required, current_user
+from models import db, User, Project, Template, ProjectVersion, init_db
+from auth import auth_bp
 
 # Try to import pdfplumber (optional, may fail on some systems)
 try:
@@ -42,8 +48,28 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key-change-
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
+# Database configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///testscript_generator.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+# Initialize database
+init_db(app)
+
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
+login_manager.login_message = 'Please log in to access this page.'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Register authentication blueprint
+app.register_blueprint(auth_bp)
 
 # Initialize Anthropic client
 api_key = os.getenv('ANTHROPIC_API_KEY')
@@ -312,9 +338,74 @@ def populate_word_template(template_path, test_steps):
 
 
 @app.route('/')
-def index():
-    """Serve the main page"""
-    return render_template('index.html')
+def landing():
+    """Landing page - redirects logged-in users to dashboard"""
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+    return render_template('landing.html')
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    """User dashboard with project list"""
+    projects = Project.query.filter_by(user_id=current_user.id).order_by(Project.updated_at.desc()).all()
+
+    # Calculate stats
+    stats = {
+        'total_projects': len(projects),
+        'completed_projects': sum(1 for p in projects if p.status == 'executed'),
+        'draft_projects': sum(1 for p in projects if p.status in ['draft', 'in_review']),
+        'time_saved': len(projects) * 400  # Estimate 400 hours saved per project
+    }
+
+    return render_template('dashboard.html', projects=projects, stats=stats)
+
+
+@app.route('/generator')
+@login_required
+def generator():
+    """Test script generator page"""
+    project_id = request.args.get('project_id')
+    project = None
+
+    if project_id:
+        project = Project.query.filter_by(project_id=project_id, user_id=current_user.id).first()
+
+    return render_template('generator.html', project=project)
+
+
+@app.route('/projects/<project_id>')
+@login_required
+def view_project(project_id):
+    """View a specific project"""
+    project = Project.query.filter_by(project_id=project_id, user_id=current_user.id).first_or_404()
+
+    # Parse test steps from JSON
+    test_steps = []
+    if project.test_steps:
+        try:
+            test_steps = json.loads(project.test_steps)
+        except:
+            test_steps = []
+
+    # Get version history
+    versions = project.versions.all()
+
+    return render_template('project_view.html', project=project, test_steps=test_steps, versions=versions)
+
+
+@app.route('/api/projects/<project_id>', methods=['DELETE'])
+@login_required
+def delete_project(project_id):
+    """Delete a project"""
+    try:
+        project = Project.query.filter_by(project_id=project_id, user_id=current_user.id).first_or_404()
+        db.session.delete(project)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/api/generate-preview', methods=['POST'])
@@ -381,11 +472,34 @@ def generate_preview():
         if 'test_steps' not in test_data:
             return jsonify({'error': 'Invalid response from AI: missing test_steps'}), 500
 
-        # Store template path in session for later download
+        # Store template path and URS text in session for later download
         session['template_path'] = template_path
         session['session_id'] = session_id
+        session['urs_text'] = urs_text  # Store for enhanced features
 
-        # Clean up URS file (we don't need it anymore)
+        # Save project to database if user is authenticated
+        if current_user.is_authenticated:
+            try:
+                # Create or update project
+                project = Project(
+                    project_id=session_id,
+                    name=f"Project - {urs_file.filename}",
+                    description=f"Generated from {urs_file.filename}",
+                    user_id=current_user.id,
+                    urs_filename=urs_file.filename,
+                    urs_text=urs_text,
+                    template_filename=template_file.filename,
+                    test_steps=json.dumps(test_data['test_steps']),
+                    status='draft'
+                )
+                db.session.add(project)
+                db.session.commit()
+                print(f"✓ Project saved to database: {project.project_id}")
+            except Exception as e:
+                print(f"⚠ Failed to save project to database: {e}")
+                # Don't fail the request if database save fails
+
+        # Clean up URS file (we don't need it anymore in uploads folder)
         try:
             os.remove(urs_path)
         except:
@@ -594,8 +708,17 @@ def generate_validation_plan_endpoint():
 
     try:
         data = request.get_json()
-        urs_text = data.get('urs_text', '')
         test_steps = data.get('test_steps', [])
+        session_id = data.get('session_id', '')
+
+        # Try to get URS text from session
+        urs_text = session.get('urs_text', '')
+
+        # If not in session and user is authenticated, try to get from database
+        if not urs_text and current_user.is_authenticated and session_id:
+            project = Project.query.filter_by(project_id=session_id, user_id=current_user.id).first()
+            if project:
+                urs_text = project.urs_text
 
         if not urs_text or not test_steps:
             return jsonify({'error': 'URS text and test steps required'}), 400
@@ -651,10 +774,19 @@ def check_quality_endpoint():
 
     try:
         data = request.get_json()
-        urs_text = data.get('urs_text', '')
+        session_id = data.get('session_id', '')
+
+        # Try to get URS text from session
+        urs_text = session.get('urs_text', '')
+
+        # If not in session and user is authenticated, try to get from database
+        if not urs_text and current_user.is_authenticated and session_id:
+            project = Project.query.filter_by(project_id=session_id, user_id=current_user.id).first()
+            if project:
+                urs_text = project.urs_text
 
         if not urs_text:
-            return jsonify({'error': 'URS text required'}), 400
+            return jsonify({'error': 'URS text not found. Please generate a test script first.'}), 400
 
         quality_report = quality_checker.analyze_requirements(urs_text)
 

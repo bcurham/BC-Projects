@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Test Script Generator{% endblock %}
+
+{% block content %}
+<div class="landing-hero">
+    <div class="container">
+        <h1 class="hero-title">Automated Test Script Generator</h1>
+        <p class="hero-subtitle">Generate GxP-compliant test scripts from URS documents in minutes, not weeks</p>
+
+        <div class="hero-cta">
+            <a href="{{ url_for('auth.demo_login') }}" class="btn btn-primary btn-large">
+                🚀 Try Demo - No Signup Required
+            </a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-large">
+                Create Free Account
+            </a>
+        </div>
+
+        <p class="hero-note">Demo mode gives you full access to all features instantly</p>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="container">
+        <h2 class="section-title">Why Validation Engineers Love This Tool</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>99% Faster</h3>
+                <p>Generate test scripts in 5 minutes instead of 2-3 weeks. Save 300-500 hours per project.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI-Powered</h3>
+                <p>Claude AI intelligently extracts requirements and generates comprehensive test steps.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">✅</div>
+                <h3>GxP Compliant</h3>
+                <p>FDA 21 CFR Part 11 and GxP compliant. Audit-ready documentation.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h3>Complete RTM</h3>
+                <p>Auto-generates Requirements Traceability Matrix linking all requirements to tests.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>VMP & VSR</h3>
+                <p>Generates Validation Master Plan and Summary Report documents automatically.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>Change Analysis</h3>
+                <p>Tracks URS changes and calculates test case impact. Never miss a requirement change.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">✓</div>
+                <h3>Quality Check</h3>
+                <p>AI analyzes requirements for ambiguity, testability, and completeness.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <h3>Audit Package</h3>
+                <p>One-click export of all validation artifacts in organized ZIP for regulatory audits.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="value-proposition">
+    <div class="container">
+        <h2 class="section-title">Validation Made Simple</h2>
+
+        <div class="value-content">
+            <div class="value-stats">
+                <div class="stat">
+                    <div class="stat-number">6-11 weeks</div>
+                    <div class="stat-label">Saved per project</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">$40,000+</div>
+                    <div class="stat-label">Cost savings per project</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">8 documents</div>
+                    <div class="stat-label">Generated automatically</div>
+                </div>
+            </div>
+
+            <div class="value-description">
+                <h3>Transform Your Validation Process</h3>
+                <p>Stop spending weeks manually creating test scripts, traceability matrices, and validation documentation. Our AI-powered platform automates the entire process while maintaining GxP compliance.</p>
+
+                <ul class="benefit-list">
+                    <li>✓ Upload URS → Generate test script in 5 minutes</li>
+                    <li>✓ Preview, edit, and download immediately</li>
+                    <li>✓ Auto-generate RTM, VMP, VSR, and audit packages</li>
+                    <li>✓ Track changes and analyze quality</li>
+                    <li>✓ Maintain complete project history</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-section">
+    <div class="container">
+        <h2>Ready to Transform Your Validation Process?</h2>
+        <p>Start with demo mode or create your free account</p>
+
+        <div class="cta-buttons">
+            <a href="{{ url_for('auth.demo_login') }}" class="btn btn-primary btn-large">
+                Try Demo Now
+            </a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-large">
+                Create Account
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.landing-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 40px;
+    opacity: 0.95;
+}
+
+.hero-cta {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.hero-note {
+    opacity: 0.8;
+    font-size: 0.95rem;
+}
+
+.btn-large {
+    padding: 15px 40px;
+    font-size: 1.1rem;
+}
+
+.btn-demo {
+    background-color: #ff6b6b;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-demo:hover {
+    background-color: #ee5a52;
+    transform: translateY(-2px);
+}
+
+.features-section, .value-proposition, .cta-section {
+    padding: 60px 20px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    color: #2d3748;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.feature-card h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.value-proposition {
+    background-color: #f7fafc;
+}
+
+.value-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+}
+
+.value-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.stat {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    color: #718096;
+    font-size: 1rem;
+}
+
+.value-description h3 {
+    color: #2d3748;
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.benefit-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 30px;
+}
+
+.benefit-list li {
+    padding: 10px 0;
+    font-size: 1.1rem;
+    color: #4a5568;
+}
+
+.cta-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.cta-section p {
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+    opacity: 0.95;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+
+    .value-content {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-cta {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+{% endblock %}
