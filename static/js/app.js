@@ -272,6 +272,13 @@ async function generateTestScript() {
             previewSection.classList.remove('hidden');
             previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+            // Show "View Project" button and set link
+            const viewProjectBtn = document.getElementById('viewProjectBtn');
+            if (viewProjectBtn) {
+                viewProjectBtn.href = `/project/${currentSessionId}`;
+                viewProjectBtn.style.display = 'inline-flex';
+            }
+
             // Hide upload form
             document.querySelector('.upload-section').style.display = 'none';
         } else {

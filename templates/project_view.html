@@ -78,7 +78,8 @@
                 Generated Documents
             </h2>
             <div class="documents-grid">
-                <div class="document-card">
+                <div class="document-card {% if not test_steps %}document-unavailable{% endif %}">
+                    <div class="doc-status-indicator {% if test_steps %}status-available{% else %}status-unavailable{% endif %}"></div>
                     <div class="document-icon doc-icon-primary">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -87,16 +88,37 @@
                     <div class="document-info">
                         <h3>Test Script</h3>
                         <p>Main validation test script document</p>
+                        {% if test_steps %}
+                            <span class="doc-available-badge">Available</span>
+                        {% else %}
+                            <span class="doc-unavailable-badge">Not Generated</span>
+                        {% endif %}
                     </div>
-                    <button onclick="downloadDocument('test-script')" class="btn btn-sm btn-primary">
-                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        Download
-                    </button>
+                    {% if test_steps %}
+                        <div class="document-actions">
+                            <button onclick="previewDocument('test-script')" class="btn btn-sm btn-secondary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                Preview
+                            </button>
+                            <button onclick="downloadDocument('test-script')" class="btn btn-sm btn-primary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                    {% else %}
+                        <button class="btn btn-sm btn-disabled" disabled>
+                            Not Available
+                        </button>
+                    {% endif %}
                 </div>
 
-                <div class="document-card">
+                <div class="document-card {% if not test_steps %}document-unavailable{% endif %}">
+                    <div class="doc-status-indicator {% if test_steps %}status-available{% else %}status-unavailable{% endif %}"></div>
                     <div class="document-icon doc-icon-green">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -105,16 +127,37 @@
                     <div class="document-info">
                         <h3>RTM (Excel)</h3>
                         <p>Requirements Traceability Matrix spreadsheet</p>
+                        {% if test_steps %}
+                            <span class="doc-available-badge">Available</span>
+                        {% else %}
+                            <span class="doc-unavailable-badge">Not Generated</span>
+                        {% endif %}
                     </div>
-                    <button onclick="downloadDocument('rtm-excel')" class="btn btn-sm btn-primary">
-                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        Download
-                    </button>
+                    {% if test_steps %}
+                        <div class="document-actions">
+                            <button onclick="previewDocument('rtm-excel')" class="btn btn-sm btn-secondary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                Preview
+                            </button>
+                            <button onclick="downloadDocument('rtm-excel')" class="btn btn-sm btn-primary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                    {% else %}
+                        <button class="btn btn-sm btn-disabled" disabled>
+                            Not Available
+                        </button>
+                    {% endif %}
                 </div>
 
-                <div class="document-card">
+                <div class="document-card {% if not test_steps %}document-unavailable{% endif %}">
+                    <div class="doc-status-indicator {% if test_steps %}status-available{% else %}status-unavailable{% endif %}"></div>
                     <div class="document-icon doc-icon-blue">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -123,16 +166,37 @@
                     <div class="document-info">
                         <h3>RTM (Word)</h3>
                         <p>Requirements Traceability Matrix document</p>
+                        {% if test_steps %}
+                            <span class="doc-available-badge">Available</span>
+                        {% else %}
+                            <span class="doc-unavailable-badge">Not Generated</span>
+                        {% endif %}
                     </div>
-                    <button onclick="downloadDocument('rtm-word')" class="btn btn-sm btn-primary">
-                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        Download
-                    </button>
+                    {% if test_steps %}
+                        <div class="document-actions">
+                            <button onclick="previewDocument('rtm-word')" class="btn btn-sm btn-secondary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                Preview
+                            </button>
+                            <button onclick="downloadDocument('rtm-word')" class="btn btn-sm btn-primary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                    {% else %}
+                        <button class="btn btn-sm btn-disabled" disabled>
+                            Not Available
+                        </button>
+                    {% endif %}
                 </div>
 
-                <div class="document-card">
+                <div class="document-card {% if not test_steps %}document-unavailable{% endif %}">
+                    <div class="doc-status-indicator {% if test_steps %}status-available{% else %}status-unavailable{% endif %}"></div>
                     <div class="document-icon doc-icon-purple">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -141,16 +205,37 @@
                     <div class="document-info">
                         <h3>Validation Plan (VMP)</h3>
                         <p>Validation Master Plan document</p>
+                        {% if test_steps %}
+                            <span class="doc-available-badge">Available</span>
+                        {% else %}
+                            <span class="doc-unavailable-badge">Not Generated</span>
+                        {% endif %}
                     </div>
-                    <button onclick="downloadDocument('vmp')" class="btn btn-sm btn-primary">
-                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        Download
-                    </button>
+                    {% if test_steps %}
+                        <div class="document-actions">
+                            <button onclick="previewDocument('vmp')" class="btn btn-sm btn-secondary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                Preview
+                            </button>
+                            <button onclick="downloadDocument('vmp')" class="btn btn-sm btn-primary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                    {% else %}
+                        <button class="btn btn-sm btn-disabled" disabled>
+                            Not Available
+                        </button>
+                    {% endif %}
                 </div>
 
-                <div class="document-card">
+                <div class="document-card {% if not test_steps %}document-unavailable{% endif %}">
+                    <div class="doc-status-indicator {% if test_steps %}status-available{% else %}status-unavailable{% endif %}"></div>
                     <div class="document-icon doc-icon-orange">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -159,16 +244,37 @@
                     <div class="document-info">
                         <h3>Summary Report (VSR)</h3>
                         <p>Validation Summary Report document</p>
+                        {% if test_steps %}
+                            <span class="doc-available-badge">Available</span>
+                        {% else %}
+                            <span class="doc-unavailable-badge">Not Generated</span>
+                        {% endif %}
                     </div>
-                    <button onclick="downloadDocument('vsr')" class="btn btn-sm btn-primary">
-                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        Download
-                    </button>
+                    {% if test_steps %}
+                        <div class="document-actions">
+                            <button onclick="previewDocument('vsr')" class="btn btn-sm btn-secondary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                Preview
+                            </button>
+                            <button onclick="downloadDocument('vsr')" class="btn btn-sm btn-primary">
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                    {% else %}
+                        <button class="btn btn-sm btn-disabled" disabled>
+                            Not Available
+                        </button>
+                    {% endif %}
                 </div>
 
-                <div class="document-card">
+                <div class="document-card {% if not test_steps %}document-unavailable{% endif %}">
+                    <div class="doc-status-indicator {% if test_steps %}status-available{% else %}status-unavailable{% endif %}"></div>
                     <div class="document-icon doc-icon-teal">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/>
@@ -177,13 +283,24 @@
                     <div class="document-info">
                         <h3>Audit Package</h3>
                         <p>Complete ZIP with all validation documents</p>
+                        {% if test_steps %}
+                            <span class="doc-available-badge">Available</span>
+                        {% else %}
+                            <span class="doc-unavailable-badge">Not Generated</span>
+                        {% endif %}
                     </div>
-                    <button onclick="downloadDocument('audit-package')" class="btn btn-sm btn-primary">
-                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
-                        Download
-                    </button>
+                    {% if test_steps %}
+                        <button onclick="downloadDocument('audit-package')" class="btn btn-sm btn-primary" style="width: 100%;">
+                            <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Download
+                        </button>
+                    {% else %}
+                        <button class="btn btn-sm btn-disabled" disabled>
+                            Not Available
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -375,11 +492,39 @@
     gap: 15px;
     transition: all 0.2s ease;
     border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
 }
 
 .document-card:hover {
     border-color: var(--primary-color);
     transform: translateY(-2px);
+}
+
+.document-card.document-unavailable {
+    opacity: 0.6;
+    background: #f8f9fa;
+}
+
+.document-card.document-unavailable:hover {
+    border-color: transparent;
+    transform: none;
+}
+
+.doc-status-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.doc-status-indicator.status-available {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.doc-status-indicator.status-unavailable {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
 }
 
 .document-icon {
@@ -435,8 +580,53 @@
 .document-info p {
     font-size: 0.875rem;
     color: var(--text-secondary);
-    margin: 0;
+    margin: 0 0 8px 0;
     line-height: 1.4;
+}
+
+.doc-available-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #d1fae5;
+    color: #059669;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.doc-unavailable-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.document-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.document-actions .btn {
+    flex: 1;
+}
+
+.btn-disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-disabled:hover {
+    background: #e5e7eb;
+    transform: none;
 }
 
 .table-wrapper {
@@ -545,6 +735,11 @@ const PROJECT_ID = '{{ project.project_id }}';
 
 function downloadDocument(docType) {
     window.location.href = `/api/projects/${PROJECT_ID}/documents/${docType}`;
+}
+
+function previewDocument(docType) {
+    // Open preview in a new window/tab
+    window.open(`/api/projects/${PROJECT_ID}/documents/${docType}/preview`, '_blank');
 }
 
 function editProjectName() {

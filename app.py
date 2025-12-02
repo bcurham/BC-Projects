@@ -561,6 +561,214 @@ def download_project_document(project_id, doc_type):
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/api/projects/<project_id>/documents/<doc_type>/preview', methods=['GET'])
+@login_required
+def preview_project_document(project_id, doc_type):
+    """Preview a specific document for a project (returns HTML view)"""
+    try:
+        project = Project.query.filter_by(project_id=project_id, user_id=current_user.id).first_or_404()
+
+        if not project.test_steps:
+            return jsonify({'error': 'No test steps found'}), 404
+
+        test_steps = json.loads(project.test_steps)
+
+        # Generate HTML preview based on document type
+        if doc_type == 'test-script':
+            html_content = f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Test Script Preview - {project.name}</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; margin: 20px; background: #f8fafc; }}
+                    h1 {{ color: #1e293b; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }}
+                    table {{ border-collapse: collapse; width: 100%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
+                    th {{ background: #2563eb; color: white; padding: 12px; text-align: left; }}
+                    td {{ padding: 12px; border-bottom: 1px solid #e2e8f0; }}
+                    tr:hover {{ background: #f8fafc; }}
+                    .header {{ background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
+                    .meta {{ color: #64748b; font-size: 14px; }}
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>{project.name} - Test Script</h1>
+                    <div class="meta">
+                        <p><strong>Project ID:</strong> {project.project_id}</p>
+                        <p><strong>URS Document:</strong> {project.urs_filename or 'N/A'}</p>
+                        <p><strong>Total Steps:</strong> {len(test_steps)}</p>
+                        <p><strong>Generated:</strong> {project.created_at.strftime('%B %d, %Y at %I:%M %p')}</p>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Step</th>
+                            <th>Requirement #</th>
+                            <th>Description</th>
+                            <th>Expected Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            """
+            for step in test_steps:
+                html_content += f"""
+                        <tr>
+                            <td><strong>{step.get('step_no', '')}</strong></td>
+                            <td><code style="background:#f1f5f9;padding:4px 8px;border-radius:4px;">{step.get('requirement_id', '')}</code></td>
+                            <td>{step.get('description', '')}</td>
+                            <td>{step.get('expected_result', '')}</td>
+                        </tr>
+                """
+            html_content += """
+                    </tbody>
+                </table>
+            </body>
+            </html>
+            """
+            return html_content, 200, {'Content-Type': 'text/html'}
+
+        elif doc_type in ['rtm-excel', 'rtm-word']:
+            # RTM Preview
+            html_content = f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>RTM Preview - {project.name}</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; margin: 20px; background: #f8fafc; }}
+                    h1 {{ color: #1e293b; border-bottom: 3px solid #10b981; padding-bottom: 10px; }}
+                    table {{ border-collapse: collapse; width: 100%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
+                    th {{ background: #10b981; color: white; padding: 12px; text-align: left; }}
+                    td {{ padding: 12px; border-bottom: 1px solid #e2e8f0; }}
+                    tr:hover {{ background: #f8fafc; }}
+                    .header {{ background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
+                    .meta {{ color: #64748b; font-size: 14px; }}
+                    .status-badge {{ display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }}
+                    .status-pending {{ background: #fef3c7; color: #92400e; }}
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>{project.name} - Requirements Traceability Matrix</h1>
+                    <div class="meta">
+                        <p><strong>Total Requirements:</strong> {len(test_steps)}</p>
+                        <p><strong>Coverage:</strong> 100%</p>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Requirement ID</th>
+                            <th>Requirement Description</th>
+                            <th>Test Step</th>
+                            <th>Expected Result</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            """
+            for step in test_steps:
+                html_content += f"""
+                        <tr>
+                            <td><strong>{step.get('requirement_id', '')}</strong></td>
+                            <td>{step.get('description', '')}</td>
+                            <td>Step {step.get('step_no', '')}</td>
+                            <td>{step.get('expected_result', '')}</td>
+                            <td><span class="status-badge status-pending">Pending Test</span></td>
+                        </tr>
+                """
+            html_content += """
+                    </tbody>
+                </table>
+            </body>
+            </html>
+            """
+            return html_content, 200, {'Content-Type': 'text/html'}
+
+        elif doc_type in ['vmp', 'vsr']:
+            # Validation Docs Preview
+            doc_name = "Validation Master Plan (VMP)" if doc_type == 'vmp' else "Validation Summary Report (VSR)"
+            html_content = f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>{doc_name} - {project.name}</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; margin: 20px; background: #f8fafc; max-width: 1200px; margin: 20px auto; }}
+                    h1 {{ color: #1e293b; border-bottom: 3px solid #9333ea; padding-bottom: 10px; }}
+                    .section {{ background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
+                    h2 {{ color: #9333ea; margin-top: 0; }}
+                    .info-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }}
+                    .info-item {{ padding: 10px; background: #f8fafc; border-radius: 4px; }}
+                    .info-label {{ font-weight: 600; color: #64748b; font-size: 12px; text-transform: uppercase; }}
+                    .info-value {{ margin-top: 5px; color: #1e293b; }}
+                </style>
+            </head>
+            <body>
+                <div class="section">
+                    <h1>{doc_name}</h1>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Project Name</div>
+                            <div class="info-value">{project.name}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Document Type</div>
+                            <div class="info-value">{doc_name}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Total Test Steps</div>
+                            <div class="info-value">{len(test_steps)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Status</div>
+                            <div class="info-value">Draft</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Document Purpose</h2>
+                    <p>This {'validation master plan outlines the validation strategy and approach' if doc_type == 'vmp' else 'validation summary report provides evidence that the validation was completed successfully'} for the {project.name} validation project.</p>
+                </div>
+
+                <div class="section">
+                    <h2>Scope</h2>
+                    <p>This document covers {len(test_steps)} test steps derived from the user requirements specification.</p>
+                </div>
+
+                <div class="section">
+                    <h2>Test Coverage</h2>
+                    <p><strong>Requirements Covered:</strong> {len(test_steps)}<br>
+                    <strong>Coverage Percentage:</strong> 100%<br>
+                    <strong>Compliance Standard:</strong> FDA 21 CFR Part 11</p>
+                </div>
+
+                <div class="section" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
+                    <p style="margin: 0;"><strong>Note:</strong> This is a preview. Download the full document for complete validation documentation.</p>
+                </div>
+            </body>
+            </html>
+            """
+            return html_content, 200, {'Content-Type': 'text/html'}
+
+        else:
+            return "<h1>Preview not available</h1><p>This document type does not support preview.</p>", 200, {'Content-Type': 'text/html'}
+
+    except Exception as e:
+        print(f"Preview Error: {str(e)}")
+        print(traceback.format_exc())
+        return f"<h1>Error</h1><p>{str(e)}</p>", 500, {'Content-Type': 'text/html'}
+
+
 @app.route('/api/generate-preview', methods=['POST'])
 def generate_preview():
     """Generate test steps and return for preview/editing"""

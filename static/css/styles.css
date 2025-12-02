@@ -1126,3 +1126,109 @@ footer {
         justify-content: center;
     }
 }
+
+/* ===== Document Status Indicators ===== */
+
+/* Status indicator bar at top of document cards */
+.doc-status-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    border-radius: 8px 8px 0 0;
+}
+
+.status-available {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.status-unavailable {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+/* Availability badges */
+.doc-available-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #d1fae5;
+    color: #065f46;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+}
+
+.doc-unavailable-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+}
+
+/* Unavailable document cards */
+.document-unavailable {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f1f5f9;
+}
+
+.document-unavailable .document-icon {
+    opacity: 0.5;
+}
+
+.document-unavailable:hover {
+    transform: none;
+    box-shadow: var(--shadow);
+}
+
+/* Document actions (Preview + Download buttons) */
+.document-actions {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.document-actions .btn {
+    flex: 1;
+}
+
+/* Disabled button style */
+.btn-disabled {
+    background: var(--border-color);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-disabled:hover {
+    background: var(--border-color);
+    transform: none;
+}
+
+/* Document cards need position relative for status indicator */
+.document-card {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Adjust document-info padding to account for badge */
+.document-card .document-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* ===== Success Button Variant ===== */
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+}
