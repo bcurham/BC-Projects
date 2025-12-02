@@ -231,6 +231,12 @@
         </footer>
     </div>
 
+    <!-- Pass project data to JavaScript -->
+    <script>
+        // Set project ID if coming from dashboard
+        const EXISTING_PROJECT_ID = {{ ('"%s"' % project.project_id) if project else 'null' }};
+        const EXISTING_PROJECT_NAME = {{ ('"%s"' % project.name) if project else 'null' }};
+    </script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

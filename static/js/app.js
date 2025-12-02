@@ -183,13 +183,26 @@ function escapeHtml(text) {
 // Project naming variables
 let projectName = '';
 let projectDescription = '';
+let projectId = '';
 
-// Generate preview - show modal first to get project name
+// Check if we have an existing project from the URL
+if (typeof EXISTING_PROJECT_ID !== 'undefined' && EXISTING_PROJECT_ID) {
+    projectId = EXISTING_PROJECT_ID;
+    projectName = EXISTING_PROJECT_NAME || '';
+}
+
+// Generate preview - show modal first to get project name (only if no existing project)
 uploadForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     if (!ursFile.files[0] || !templateFile.files[0]) {
         showError('Please select both URS document and template file.');
+        return;
+    }
+
+    // If we already have a project ID, skip modal and upload directly
+    if (projectId) {
+        generateTestScript();
         return;
     }
 
@@ -235,6 +248,11 @@ async function generateTestScript() {
     formData.append('template_file', templateFile.files[0]);
     formData.append('project_name', projectName);
     formData.append('project_description', projectDescription);
+
+    // Include project_id if updating existing project
+    if (projectId) {
+        formData.append('project_id', projectId);
+    }
 
     showLoading('Analyzing URS document and generating test steps... This may take a minute.');
 

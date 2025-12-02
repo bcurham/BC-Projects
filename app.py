@@ -408,6 +408,43 @@ def delete_project(project_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+@app.route('/api/projects', methods=['POST'])
+@login_required
+def create_project():
+    """Create a new empty project with name and description"""
+    try:
+        data = request.get_json()
+
+        if not data.get('name'):
+            return jsonify({'error': 'Project name is required'}), 400
+
+        # Generate unique project ID
+        project_id = str(uuid.uuid4())
+
+        # Create new project
+        project = Project(
+            project_id=project_id,
+            name=data['name'],
+            description=data.get('description', ''),
+            user_id=current_user.id,
+            status='draft'
+        )
+
+        db.session.add(project)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'project': {
+                'project_id': project.project_id,
+                'name': project.name,
+                'description': project.description
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/api/projects/<project_id>', methods=['PUT'])
 @login_required
 def update_project(project_id):
@@ -541,6 +578,7 @@ def generate_preview():
         # Extract project details from form
         project_name = request.form.get('project_name', '').strip()
         project_description = request.form.get('project_description', '').strip()
+        existing_project_id = request.form.get('project_id', '').strip()  # Check if updating existing project
 
         # Validate files
         if urs_file.filename == '':
@@ -600,25 +638,41 @@ def generate_preview():
         # Save project to database if user is authenticated
         if current_user.is_authenticated:
             try:
-                # Create or update project
-                # Use user-provided project name, or fallback to filename
-                final_project_name = project_name if project_name else f"Project - {urs_file.filename}"
-                final_project_description = project_description if project_description else f"Generated from {urs_file.filename}"
+                # Check if updating existing project or creating new one
+                if existing_project_id:
+                    # Update existing project
+                    project = Project.query.filter_by(project_id=existing_project_id, user_id=current_user.id).first()
+                    if project:
+                        project.urs_filename = urs_file.filename
+                        project.urs_text = urs_text
+                        project.template_filename = template_file.filename
+                        project.test_steps = json.dumps(test_data['test_steps'])
+                        project.updated_at = datetime.utcnow()
+                        session_id = existing_project_id  # Use existing project ID
+                        print(f"✓ Project updated in database: {project.project_id}")
+                    else:
+                        return jsonify({'error': 'Project not found or access denied'}), 404
+                else:
+                    # Create new project
+                    # Use user-provided project name, or fallback to filename
+                    final_project_name = project_name if project_name else f"Project - {urs_file.filename}"
+                    final_project_description = project_description if project_description else f"Generated from {urs_file.filename}"
 
-                project = Project(
-                    project_id=session_id,
-                    name=final_project_name,
-                    description=final_project_description,
-                    user_id=current_user.id,
-                    urs_filename=urs_file.filename,
-                    urs_text=urs_text,
-                    template_filename=template_file.filename,
-                    test_steps=json.dumps(test_data['test_steps']),
-                    status='draft'
-                )
-                db.session.add(project)
+                    project = Project(
+                        project_id=session_id,
+                        name=final_project_name,
+                        description=final_project_description,
+                        user_id=current_user.id,
+                        urs_filename=urs_file.filename,
+                        urs_text=urs_text,
+                        template_filename=template_file.filename,
+                        test_steps=json.dumps(test_data['test_steps']),
+                        status='draft'
+                    )
+                    db.session.add(project)
+                    print(f"✓ Project created in database: {project.project_id}")
+
                 db.session.commit()
-                print(f"✓ Project saved to database: {project.project_id}")
             except Exception as e:
                 print(f"⚠ Failed to save project to database: {e}")
                 # Don't fail the request if database save fails

@@ -10,12 +10,12 @@
                 <h1>Welcome back, {{ current_user.username }}!</h1>
                 <p class="dashboard-subtitle">Manage your validation projects and generate new test scripts</p>
             </div>
-            <a href="{{ url_for('generator') }}" class="btn btn-primary btn-large">
+            <button onclick="showCreateProjectModal()" class="btn btn-primary btn-large">
                 <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 New Project
-            </a>
+            </button>
         </div>
 
         <!-- Stats Cards -->
@@ -116,12 +116,39 @@
                     </svg>
                     <h3>No Projects Yet</h3>
                     <p>Start by creating your first validation project</p>
-                    <a href="{{ url_for('generator') }}" class="btn btn-primary">
+                    <button onclick="showCreateProjectModal()" class="btn btn-primary">
                         Create First Project
-                    </a>
+                    </button>
                 </div>
             {% endif %}
         </div>
+    </div>
+</div>
+
+<!-- Create Project Modal -->
+<div id="createProjectModal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Create New Project</h3>
+        <p class="modal-subtitle">Give your validation project a meaningful name</p>
+        <form id="createProjectForm">
+            <div class="form-group">
+                <label for="newProjectName">Project Name *</label>
+                <input type="text" id="newProjectName" class="form-control" placeholder="e.g., User Login Validation" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="newProjectDescription">Description (Optional)</label>
+                <textarea id="newProjectDescription" class="form-control" rows="3" placeholder="Brief description of what this validation covers..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" onclick="hideCreateProjectModal()" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Create & Continue
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -423,6 +450,63 @@
 </style>
 
 <script>
+// Show create project modal
+function showCreateProjectModal() {
+    const modal = document.getElementById('createProjectModal');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        document.getElementById('newProjectName').focus();
+    }, 100);
+}
+
+// Hide create project modal
+function hideCreateProjectModal() {
+    const modal = document.getElementById('createProjectModal');
+    modal.classList.add('hidden');
+    document.getElementById('createProjectForm').reset();
+}
+
+// Close modal when clicking outside
+document.getElementById('createProjectModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'createProjectModal') {
+        hideCreateProjectModal();
+    }
+});
+
+// Handle create project form submission
+document.getElementById('createProjectForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('newProjectName').value.trim();
+    const description = document.getElementById('newProjectDescription').value.trim();
+
+    if (!name) {
+        alert('Please enter a project name');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/projects', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, description })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Redirect to generator page with project ID
+            window.location.href = `/generator?project_id=${data.project.project_id}`;
+        } else {
+            alert('Failed to create project: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('Error creating project: ' + error.message);
+    }
+});
+
 function deleteProject(projectId) {
     if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
         fetch(`/api/projects/${projectId}`, {
