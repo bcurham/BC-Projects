@@ -537,6 +537,10 @@ def generate_preview():
         urs_file = request.files['urs_file']
         template_file = request.files['template_file']
 
+        # Extract project details from form
+        project_name = request.form.get('project_name', '').strip()
+        project_description = request.form.get('project_description', '').strip()
+
         # Validate files
         if urs_file.filename == '':
             return jsonify({'error': 'No URS file selected'}), 400
@@ -596,10 +600,14 @@ def generate_preview():
         if current_user.is_authenticated:
             try:
                 # Create or update project
+                # Use user-provided project name, or fallback to filename
+                final_project_name = project_name if project_name else f"Project - {urs_file.filename}"
+                final_project_description = project_description if project_description else f"Generated from {urs_file.filename}"
+
                 project = Project(
                     project_id=session_id,
-                    name=f"Project - {urs_file.filename}",
-                    description=f"Generated from {urs_file.filename}",
+                    name=final_project_name,
+                    description=final_project_description,
                     user_id=current_user.id,
                     urs_filename=urs_file.filename,
                     urs_text=urs_text,
