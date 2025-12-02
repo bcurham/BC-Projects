@@ -261,10 +261,11 @@ URS Text:
 
 Generate the JSON output with test_steps array now:"""
 
-    # Call Claude API
+    # Call Claude API with temperature=0 for consistent, deterministic output
     message = client.messages.create(
         model="claude-sonnet-4-5-20250929",
         max_tokens=8000,
+        temperature=0,  # Set to 0 for maximum consistency and determinism
         messages=[
             {
                 "role": "user",

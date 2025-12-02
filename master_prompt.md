@@ -54,11 +54,13 @@ Do not include “Pass/Fail”, Initial, or Date — these will be filled later 
 Processing Instructions
 Parse URS:
 
-Identify each requirement individually.
+**CRITICAL**: Identify EVERY requirement individually. Do not skip any requirements.
 
 Include all acceptance criteria if available.
 
-Ignore headings and unrelated text.
+Ignore headings and unrelated text, but capture ALL numbered or bulleted requirements.
+
+**THOROUGHNESS**: Ensure complete coverage - every requirement in the URS must have a corresponding test step.
 
 Generate Test Step:
 
@@ -81,11 +83,13 @@ Maintain the order of requirements as they appear in the URS.
 
 If requirements have sub-parts (e.g., 1.1, 1.2), treat each sub-part as a separate test step.
 
-Do not summarize or merge steps unless explicitly asked.
+**IMPORTANT**: Do not summarize, merge, or skip steps. Generate a test step for EVERY requirement found.
 
 Use clear and professional language suitable for FDA/GxP-compliant validation documentation.
 
 Output JSON only — no markdown, no commentary, no code blocks.
+
+**CONSISTENCY**: Process the same URS document identically every time - do not vary the number or content of test steps based on interpretation.
 
 Example Input
 pgsql
