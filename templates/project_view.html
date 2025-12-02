@@ -4,98 +4,244 @@
 
 {% block content %}
 <div class="project-view-container">
-    <div class="container" style="max-width: 1200px;">
+    <div class="container" style="max-width: 1400px;">
+        <!-- Project Header -->
         <div class="project-view-header">
-            <div>
-                <h1>{{ project.name }}</h1>
+            <div class="header-left">
+                <div class="title-section">
+                    <h1 id="projectName">{{ project.name }}</h1>
+                    <button onclick="editProjectName()" class="btn-icon-only" title="Edit project name">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </button>
+                </div>
                 {% if project.description %}
-                    <p class="project-view-subtitle">{{ project.description }}</p>
+                    <p class="project-view-subtitle" id="projectDescription">{{ project.description }}</p>
                 {% endif %}
             </div>
             <div class="header-actions">
-                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
-                <a href="{{ url_for('generator', project_id=project.project_id) }}" class="btn btn-primary">Edit Project</a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back
+                </a>
+                <a href="{{ url_for('generator', project_id=project.project_id) }}" class="btn btn-primary">
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Regenerate
+                </a>
             </div>
         </div>
 
-        <!-- Project Details -->
+        <!-- Project Details Card -->
         <div class="details-card">
             <h2>Project Details</h2>
             <div class="details-grid">
                 <div class="detail-item">
-                    <span class="detail-label">Status:</span>
-                    <span class="status-badge status-{{ project.status }}">{{ project.status | title }}</span>
+                    <span class="detail-label">Status</span>
+                    <span class="status-badge status-{{ project.status }}">
+                        {{ project.status.replace('_', ' ') | title }}
+                    </span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">Created:</span>
+                    <span class="detail-label">Created</span>
                     <span>{{ project.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">Last Updated:</span>
+                    <span class="detail-label">Last Updated</span>
                     <span>{{ project.updated_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">URS Document:</span>
+                    <span class="detail-label">URS Document</span>
                     <span>{{ project.urs_filename or 'Not specified' }}</span>
                 </div>
                 <div class="detail-item">
-                    <span class="detail-label">Template:</span>
+                    <span class="detail-label">Template</span>
                     <span>{{ project.template_filename or 'Not specified' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Test Steps</span>
+                    <span>{{ test_steps|length }} steps</span>
                 </div>
             </div>
         </div>
 
-        <!-- Test Steps Preview -->
+        <!-- Documents Section -->
+        <div class="documents-card">
+            <h2>
+                <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                Generated Documents
+            </h2>
+            <div class="documents-grid">
+                <div class="document-card">
+                    <div class="document-icon doc-icon-primary">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="document-info">
+                        <h3>Test Script</h3>
+                        <p>Main validation test script document</p>
+                    </div>
+                    <button onclick="downloadDocument('test-script')" class="btn btn-sm btn-primary">
+                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Download
+                    </button>
+                </div>
+
+                <div class="document-card">
+                    <div class="document-icon doc-icon-green">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="document-info">
+                        <h3>RTM (Excel)</h3>
+                        <p>Requirements Traceability Matrix spreadsheet</p>
+                    </div>
+                    <button onclick="downloadDocument('rtm-excel')" class="btn btn-sm btn-primary">
+                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Download
+                    </button>
+                </div>
+
+                <div class="document-card">
+                    <div class="document-icon doc-icon-blue">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="document-info">
+                        <h3>RTM (Word)</h3>
+                        <p>Requirements Traceability Matrix document</p>
+                    </div>
+                    <button onclick="downloadDocument('rtm-word')" class="btn btn-sm btn-primary">
+                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Download
+                    </button>
+                </div>
+
+                <div class="document-card">
+                    <div class="document-icon doc-icon-purple">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    <div class="document-info">
+                        <h3>Validation Plan (VMP)</h3>
+                        <p>Validation Master Plan document</p>
+                    </div>
+                    <button onclick="downloadDocument('vmp')" class="btn btn-sm btn-primary">
+                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Download
+                    </button>
+                </div>
+
+                <div class="document-card">
+                    <div class="document-icon doc-icon-orange">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="document-info">
+                        <h3>Summary Report (VSR)</h3>
+                        <p>Validation Summary Report document</p>
+                    </div>
+                    <button onclick="downloadDocument('vsr')" class="btn btn-sm btn-primary">
+                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Download
+                    </button>
+                </div>
+
+                <div class="document-card">
+                    <div class="document-icon doc-icon-teal">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="document-info">
+                        <h3>Audit Package</h3>
+                        <p>Complete ZIP with all validation documents</p>
+                    </div>
+                    <button onclick="downloadDocument('audit-package')" class="btn btn-sm btn-primary">
+                        <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Download
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Steps Section -->
         {% if test_steps %}
             <div class="test-steps-card">
-                <h2>Test Steps ({{ test_steps|length }})</h2>
+                <h2>
+                    <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    Test Steps ({{ test_steps|length }})
+                </h2>
                 <div class="table-wrapper">
                     <table class="test-script-table">
                         <thead>
                             <tr>
-                                <th>Step</th>
-                                <th>Requirement #</th>
+                                <th style="width: 60px;">Step</th>
+                                <th style="width: 120px;">Requirement #</th>
                                 <th>Description</th>
                                 <th>Expected Result</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for step in test_steps[:10] %}
+                            {% for step in test_steps %}
                                 <tr>
                                     <td>{{ step.step_no }}</td>
-                                    <td>{{ step.requirement_id }}</td>
+                                    <td><code class="req-code">{{ step.requirement_id }}</code></td>
                                     <td>{{ step.description }}</td>
                                     <td>{{ step.expected_result }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                    {% if test_steps|length > 10 %}
-                        <p class="table-note">Showing 10 of {{ test_steps|length }} test steps</p>
-                    {% endif %}
                 </div>
             </div>
         {% endif %}
+    </div>
+</div>
 
-        <!-- Version History -->
-        {% if versions %}
-            <div class="versions-card">
-                <h2>Version History</h2>
-                <div class="versions-list">
-                    {% for version in versions %}
-                        <div class="version-item">
-                            <div class="version-header">
-                                <strong>Version {{ version.version_number }}</strong>
-                                <span class="version-date">{{ version.created_at.strftime('%B %d, %Y') }}</span>
-                            </div>
-                            {% if version.notes %}
-                                <p class="version-notes">{{ version.notes }}</p>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
+<!-- Edit Project Modal -->
+<div id="editModal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Edit Project</h3>
+        <form id="editForm">
+            <div class="form-group">
+                <label for="editName">Project Name</label>
+                <input type="text" id="editName" class="form-control" value="{{ project.name }}" required>
             </div>
-        {% endif %}
+            <div class="form-group">
+                <label for="editDescription">Description</label>
+                <textarea id="editDescription" class="form-control" rows="3">{{ project.description or '' }}</textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -114,54 +260,183 @@
     gap: 20px;
 }
 
+.header-left {
+    flex: 1;
+}
+
+.title-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
 .project-view-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.btn-icon-only {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+}
+
+.btn-icon-only:hover {
+    background: var(--background);
+    color: var(--primary-color);
+}
+
+.btn-icon-only svg {
+    width: 20px;
+    height: 20px;
 }
 
 .project-view-subtitle {
     color: var(--text-secondary);
-    font-size: 1.1rem;
+    font-size: 1rem;
+    margin: 0;
 }
 
 .header-actions {
     display: flex;
-    gap: 15px;
+    gap: 12px;
 }
 
-.details-card, .test-steps-card, .versions-card {
+.btn-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+}
+
+.btn-icon-sm {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+}
+
+.details-card, .documents-card, .test-steps-card {
     background: white;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     margin-bottom: 30px;
 }
 
-.details-card h2, .test-steps-card h2, .versions-card h2 {
-    font-size: 1.5rem;
+.details-card h2, .documents-card h2, .test-steps-card h2 {
+    font-size: 1.25rem;
     margin-bottom: 20px;
     color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--primary-color);
 }
 
 .details-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
 }
 
 .detail-item {
-    padding: 15px;
-    background: var(--background);
-    border-radius: 8px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .detail-label {
     font-weight: 600;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+}
+
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.document-card {
+    background: var(--background);
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.document-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.document-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.document-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.doc-icon-primary {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.doc-icon-green {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.doc-icon-blue {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+
+.doc-icon-purple {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+.doc-icon-orange {
+    background: #fed7aa;
+    color: #ea580c;
+}
+
+.doc-icon-teal {
+    background: #ccfbf1;
+    color: #0d9488;
+}
+
+.document-info h3 {
+    font-size: 1rem;
+    margin: 0 0 4px 0;
+    color: var(--text-primary);
+}
+
+.document-info p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
 }
 
 .table-wrapper {
@@ -171,6 +446,7 @@
 .test-script-table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 0.875rem;
 }
 
 .test-script-table th {
@@ -179,50 +455,65 @@
     padding: 12px;
     text-align: left;
     font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .test-script-table td {
     padding: 12px;
     border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
 }
 
-.test-script-table tr:hover {
+.test-script-table tbody tr:hover {
     background: var(--background);
 }
 
-.table-note {
-    margin-top: 15px;
-    color: var(--text-secondary);
-    font-style: italic;
+.req-code {
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.813rem;
+    color: #475569;
+    font-family: 'Courier New', monospace;
 }
 
-.versions-list {
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
-    flex-direction: column;
-    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
 }
 
-.version-item {
-    padding: 15px;
-    background: var(--background);
-    border-radius: 8px;
-    border-left: 4px solid var(--primary-color);
+.modal.hidden {
+    display: none;
 }
 
-.version-header {
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.modal-actions {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-
-.version-date {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-.version-notes {
-    color: var(--text-secondary);
-    margin: 0;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
 }
 
 @media (max-width: 768px) {
@@ -238,6 +529,66 @@
     .header-actions .btn {
         width: 100%;
     }
+
+    .documents-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
+
+<script>
+const PROJECT_ID = '{{ project.project_id }}';
+
+function downloadDocument(docType) {
+    window.location.href = `/api/projects/${PROJECT_ID}/documents/${docType}`;
+}
+
+function editProjectName() {
+    document.getElementById('editModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('editModal').classList.add('hidden');
+}
+
+document.getElementById('editForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('editName').value;
+    const description = document.getElementById('editDescription').value;
+
+    try {
+        const response = await fetch(`/api/projects/${PROJECT_ID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, description })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('projectName').textContent = name;
+            document.getElementById('projectDescription').textContent = description;
+            closeModal();
+        } else {
+            alert('Failed to update project: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('Error updating project: ' + error.message);
+    }
+});
+
+// Close modal when clicking outside
+document.getElementById('editModal').addEventListener('click', (e) => {
+    if (e.target.id === 'editModal') {
+        closeModal();
+    }
+});
+</script>
 {% endblock %}

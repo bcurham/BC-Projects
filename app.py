@@ -355,8 +355,7 @@ def dashboard():
     stats = {
         'total_projects': len(projects),
         'completed_projects': sum(1 for p in projects if p.status == 'executed'),
-        'draft_projects': sum(1 for p in projects if p.status in ['draft', 'in_review']),
-        'time_saved': len(projects) * 400  # Estimate 400 hours saved per project
+        'draft_projects': sum(1 for p in projects if p.status in ['draft', 'in_review'])
     }
 
     return render_template('dashboard.html', projects=projects, stats=stats)
@@ -406,6 +405,122 @@ def delete_project(project_id):
         return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/projects/<project_id>', methods=['PUT'])
+@login_required
+def update_project(project_id):
+    """Update project details"""
+    try:
+        project = Project.query.filter_by(project_id=project_id, user_id=current_user.id).first_or_404()
+        data = request.get_json()
+
+        if 'name' in data:
+            project.name = data['name']
+        if 'description' in data:
+            project.description = data['description']
+        if 'status' in data:
+            project.status = data['status']
+
+        project.updated_at = datetime.utcnow()
+        db.session.commit()
+
+        return jsonify({'success': True, 'project': {
+            'project_id': project.project_id,
+            'name': project.name,
+            'description': project.description,
+            'status': project.status
+        }})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/projects/<project_id>/documents/<doc_type>', methods=['GET'])
+@login_required
+def download_project_document(project_id, doc_type):
+    """Download a specific document for a project"""
+    try:
+        project = Project.query.filter_by(project_id=project_id, user_id=current_user.id).first_or_404()
+
+        if not project.test_steps:
+            return jsonify({'error': 'No test steps found'}), 404
+
+        test_steps = json.loads(project.test_steps)
+
+        if doc_type == 'test-script':
+            # Regenerate test script Word document
+            template_path = session.get('template_path')
+            if not template_path or not os.path.exists(template_path):
+                return jsonify({'error': 'Template not found. Please regenerate the test script.'}), 404
+
+            doc = populate_word_template(template_path, test_steps)
+            output = BytesIO()
+            doc.save(output)
+            output.seek(0)
+
+            return send_file(
+                output,
+                mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                as_attachment=True,
+                download_name=f'{project.name}_Test_Script.docx'
+            )
+
+        elif doc_type == 'rtm-excel' and ENHANCED_FEATURES_AVAILABLE:
+            rtm_file = generate_rtm_excel(test_steps)
+            return send_file(
+                rtm_file,
+                mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                as_attachment=True,
+                download_name=f'{project.name}_RTM.xlsx'
+            )
+
+        elif doc_type == 'rtm-word' and ENHANCED_FEATURES_AVAILABLE:
+            rtm_file = generate_rtm_word(test_steps)
+            return send_file(
+                rtm_file,
+                mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                as_attachment=True,
+                download_name=f'{project.name}_RTM.docx'
+            )
+
+        elif doc_type == 'vmp' and ENHANCED_FEATURES_AVAILABLE:
+            vmp_file = validation_doc_gen.generate_validation_plan(project.urs_text, test_steps)
+            return send_file(
+                vmp_file,
+                mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                as_attachment=True,
+                download_name=f'{project.name}_VMP.docx'
+            )
+
+        elif doc_type == 'vsr' and ENHANCED_FEATURES_AVAILABLE:
+            vsr_file = validation_doc_gen.generate_validation_summary(test_steps)
+            return send_file(
+                vsr_file,
+                mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                as_attachment=True,
+                download_name=f'{project.name}_VSR.docx'
+            )
+
+        elif doc_type == 'audit-package' and ENHANCED_FEATURES_AVAILABLE:
+            audit_file = audit_exporter.create_audit_package(
+                test_steps=test_steps,
+                urs_text=project.urs_text,
+                project_name=project.name
+            )
+            return send_file(
+                audit_file,
+                mimetype='application/zip',
+                as_attachment=True,
+                download_name=f'{project.name}_Audit_Package.zip'
+            )
+
+        else:
+            return jsonify({'error': 'Invalid document type or feature not available'}), 400
+
+    except Exception as e:
+        print(f"Download Error: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/generate-preview', methods=['POST'])
