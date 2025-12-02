@@ -65,11 +65,23 @@
                         <div id="previewContent"></div>
                     </div>
                     <div class="preview-actions">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                            <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                            </svg>
+                            Back to Dashboard
+                        </a>
                         <button id="closePreview" class="btn btn-secondary">
-                            <span>← Start Over</span>
+                            <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Start Over
                         </button>
                         <button id="downloadBtn" class="btn btn-primary">
-                            <span>Download Word Document →</span>
+                            <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Download Test Script
                         </button>
                     </div>
                 </div>
@@ -79,31 +91,51 @@
             <div id="enhancedFeaturesSection" class="enhanced-features-section hidden">
                 <div class="card">
                     <div class="features-header">
-                        <h2>📊 Additional Validation Tools</h2>
-                        <p class="features-subtitle">Generate compliance documentation and analysis reports</p>
+                        <svg class="header-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <div>
+                            <h2>Generate Validation Documents</h2>
+                            <p class="features-subtitle">Create additional GxP-compliant documentation for your validation package</p>
+                        </div>
                     </div>
 
                     <!-- Feature Tabs -->
                     <div class="feature-tabs">
                         <button class="feature-tab active" data-tab="rtm">
-                            <span class="tab-icon">🔗</span>
-                            <span class="tab-text">Traceability Matrix</span>
+                            <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                            </svg>
+                            <span class="tab-text">Requirements Traceability</span>
+                            <span class="tab-status status-pending" data-tab-status="rtm">Not Generated</span>
                         </button>
                         <button class="feature-tab" data-tab="validation">
-                            <span class="tab-icon">📋</span>
+                            <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                             <span class="tab-text">Validation Docs</span>
+                            <span class="tab-status status-pending" data-tab-status="validation">Not Generated</span>
                         </button>
                         <button class="feature-tab" data-tab="quality">
-                            <span class="tab-icon">✓</span>
-                            <span class="tab-text">Quality Check</span>
+                            <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                            </svg>
+                            <span class="tab-text">Quality Analysis</span>
+                            <span class="tab-status status-pending" data-tab-status="quality">Not Run</span>
                         </button>
                         <button class="feature-tab" data-tab="changes">
-                            <span class="tab-icon">🔄</span>
-                            <span class="tab-text">Change Impact</span>
+                            <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            <span class="tab-text">Change Analysis</span>
+                            <span class="tab-status status-pending" data-tab-status="changes">Not Run</span>
                         </button>
                         <button class="feature-tab" data-tab="audit">
-                            <span class="tab-icon">📦</span>
+                            <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
                             <span class="tab-text">Audit Package</span>
+                            <span class="tab-status status-pending" data-tab-status="audit">Not Generated</span>
                         </button>
                     </div>
 
@@ -111,70 +143,178 @@
                     <div class="tab-contents">
                         <!-- RTM Tab -->
                         <div id="rtmTab" class="tab-content active">
-                            <h3>Requirements Traceability Matrix</h3>
-                            <p>Generate RTM mapping all requirements to test cases</p>
+                            <div class="tab-content-header">
+                                <div>
+                                    <h3>Requirements Traceability Matrix (RTM)</h3>
+                                    <p>Maps each URS requirement to corresponding test steps, ensuring complete coverage and compliance traceability.</p>
+                                </div>
+                                <div class="doc-status-badge" data-doc-status="rtm">
+                                    <svg class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Not Generated</span>
+                                </div>
+                            </div>
                             <div class="button-group">
                                 <button id="generateRTMExcel" class="btn btn-primary">
-                                    <span>Download RTM (Excel)</span>
+                                    <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    Generate RTM (Excel)
                                 </button>
                                 <button id="generateRTMWord" class="btn btn-secondary">
-                                    <span>Download RTM (Word)</span>
+                                    <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    Generate RTM (Word)
                                 </button>
                             </div>
+                            <div id="rtmPreview" class="doc-preview hidden"></div>
                         </div>
 
                         <!-- Validation Docs Tab -->
                         <div id="validationTab" class="tab-content">
-                            <h3>Validation Documentation</h3>
-                            <p>Generate GxP-compliant validation master plan and summary report</p>
+                            <div class="tab-content-header">
+                                <div>
+                                    <h3>Validation Documentation (VMP & VSR)</h3>
+                                    <p>Generate FDA 21 CFR Part 11 compliant validation master plan and summary report for your validation lifecycle.</p>
+                                </div>
+                                <div class="doc-status-badge" data-doc-status="validation">
+                                    <svg class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Not Generated</span>
+                                </div>
+                            </div>
                             <div class="button-group">
                                 <button id="generateVMP" class="btn btn-primary">
-                                    <span>Download Validation Plan (VMP)</span>
+                                    <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
+                                    Generate Validation Plan (VMP)
                                 </button>
                                 <button id="generateVSR" class="btn btn-secondary">
-                                    <span>Download Summary Report (VSR)</span>
+                                    <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Generate Summary Report (VSR)
                                 </button>
                             </div>
+                            <div id="validationPreview" class="doc-preview hidden"></div>
                         </div>
 
                         <!-- Quality Check Tab -->
                         <div id="qualityTab" class="tab-content">
-                            <h3>Requirements Quality Analysis</h3>
-                            <p>AI-powered analysis of requirement quality and testability</p>
+                            <div class="tab-content-header">
+                                <div>
+                                    <h3>Requirements Quality Analysis</h3>
+                                    <p>AI-powered analysis evaluating requirement clarity, completeness, testability, and compliance with best practices.</p>
+                                </div>
+                                <div class="doc-status-badge" data-doc-status="quality">
+                                    <svg class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Not Run</span>
+                                </div>
+                            </div>
                             <button id="runQualityCheck" class="btn btn-primary">
-                                <span>Run Quality Check</span>
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                                </svg>
+                                Run Quality Analysis
                             </button>
                             <div id="qualityResults" class="quality-results hidden"></div>
                         </div>
 
                         <!-- Change Impact Tab -->
                         <div id="changesTab" class="tab-content">
-                            <h3>Change Impact Analysis</h3>
-                            <p>Compare against previous URS versions to identify changes</p>
+                            <div class="tab-content-header">
+                                <div>
+                                    <h3>Change Impact Analysis</h3>
+                                    <p>Compare against previous URS versions to identify modifications, additions, and deletions requiring re-validation.</p>
+                                </div>
+                                <div class="doc-status-badge" data-doc-status="changes">
+                                    <svg class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Not Run</span>
+                                </div>
+                            </div>
                             <button id="runChangeAnalysis" class="btn btn-primary">
-                                <span>Analyze Changes</span>
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                Analyze Changes
                             </button>
                             <div id="changeResults" class="change-results hidden"></div>
                         </div>
 
                         <!-- Audit Package Tab -->
                         <div id="auditTab" class="tab-content">
-                            <h3>Complete Audit Package</h3>
-                            <p>Export all validation artifacts as a comprehensive ZIP package</p>
+                            <div class="tab-content-header">
+                                <div>
+                                    <h3>Complete Audit Package</h3>
+                                    <p>Export all validation artifacts as a comprehensive ZIP package ready for regulatory inspection and audit trails.</p>
+                                </div>
+                                <div class="doc-status-badge" data-doc-status="audit">
+                                    <svg class="status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span>Not Generated</span>
+                                </div>
+                            </div>
                             <div class="audit-package-info">
-                                <h4>Package includes:</h4>
+                                <h4>Package Contents:</h4>
                                 <ul>
-                                    <li>✓ User Requirements Specification (URS)</li>
-                                    <li>✓ Test Scripts</li>
-                                    <li>✓ Requirements Traceability Matrix (RTM)</li>
-                                    <li>✓ Validation Master Plan (VMP)</li>
-                                    <li>✓ Validation Summary Report (VSR)</li>
-                                    <li>✓ Quality Analysis Report</li>
-                                    <li>✓ Package Metadata</li>
+                                    <li>
+                                        <svg class="list-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        User Requirements Specification (URS)
+                                    </li>
+                                    <li>
+                                        <svg class="list-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Test Scripts with execution records
+                                    </li>
+                                    <li>
+                                        <svg class="list-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Requirements Traceability Matrix (RTM)
+                                    </li>
+                                    <li>
+                                        <svg class="list-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Validation Master Plan (VMP)
+                                    </li>
+                                    <li>
+                                        <svg class="list-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Validation Summary Report (VSR)
+                                    </li>
+                                    <li>
+                                        <svg class="list-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Quality Analysis Report
+                                    </li>
+                                    <li>
+                                        <svg class="list-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Package Metadata & Index
+                                    </li>
                                 </ul>
                             </div>
                             <button id="exportAuditPackage" class="btn btn-primary btn-large">
-                                <span>📦 Export Complete Audit Package</span>
+                                <svg class="btn-icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                </svg>
+                                Export Complete Audit Package
                             </button>
                         </div>
                     </div>
