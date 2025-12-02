@@ -180,8 +180,12 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Generate preview
-uploadForm.addEventListener('submit', async (e) => {
+// Project naming variables
+let projectName = '';
+let projectDescription = '';
+
+// Generate preview - show modal first to get project name
+uploadForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     if (!ursFile.files[0] || !templateFile.files[0]) {
@@ -189,9 +193,48 @@ uploadForm.addEventListener('submit', async (e) => {
         return;
     }
 
+    // Show modal to get project name
+    const modal = document.getElementById('projectNameModal');
+    modal.classList.remove('hidden');
+
+    // Auto-suggest project name from URS filename
+    const suggestedName = ursFile.files[0].name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, ' ');
+    document.getElementById('projectName').value = suggestedName;
+    document.getElementById('projectDescription').value = '';
+
+    // Focus on project name input
+    setTimeout(() => {
+        document.getElementById('projectName').focus();
+        document.getElementById('projectName').select();
+    }, 100);
+});
+
+// Handle project name form submission
+document.getElementById('projectNameForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    projectName = document.getElementById('projectName').value.trim();
+    projectDescription = document.getElementById('projectDescription').value.trim();
+
+    if (!projectName) {
+        alert('Please enter a project name');
+        return;
+    }
+
+    // Close modal
+    closeProjectModal();
+
+    // Now proceed with file upload
+    await generateTestScript();
+});
+
+// Function to actually generate the test script
+async function generateTestScript() {
     const formData = new FormData();
     formData.append('urs_file', ursFile.files[0]);
     formData.append('template_file', templateFile.files[0]);
+    formData.append('project_name', projectName);
+    formData.append('project_description', projectDescription);
 
     showLoading('Analyzing URS document and generating test steps... This may take a minute.');
 
@@ -219,6 +262,18 @@ uploadForm.addEventListener('submit', async (e) => {
     } catch (error) {
         hideLoading();
         showError('Network error: ' + error.message);
+    }
+}
+
+// Close project modal
+function closeProjectModal() {
+    document.getElementById('projectNameModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('projectNameModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'projectNameModal') {
+        closeProjectModal();
     }
 });
 
